@@ -1,0 +1,75 @@
+Trabajo integrador:
+| Fase  | Etapa                  | Actividades principales                                                                                                    | Entregables                   |
+| ----- | ---------------------- | -------------------------------------------------------------------------------------------------------------------------- | ----------------------------- |
+| 1 | Épica y Stories    | Definir problema, objetivo, usuarios y funcionalidades principales. Crear épicas y dividirlas en historias de usuario.     | Épicas + Historias de usuario |
+| 2 | Requerimientos     | Identificar y documentar requerimientos funcionales y no funcionales. Definir reglas de negocio y criterios de aceptación. | Documento de requerimientos   |
+| 3 | Diagramas UML      | Modelar el sistema a partir de los requerimientos. Elaborar casos de uso, clases, secuencia, actividades, etc.             | Diagramas UML                 |
+| 4 | Base de datos      | Identificar entidades, atributos y relaciones. Diseñar modelo conceptual, lógico y físico. Crear script SQL.               | Modelo ER/UML + Script de BD  |
+| 5 | Mockup / Prototipo | Diseñar las interfaces principales y flujo de navegación. Validar la experiencia antes de programar.                       | Mockup/prototipo navegable    |
+| 6 | Programa funcional | Seleccionar tecnologías, desarrollar funcionalidades prioritarias, integrar frontend, backend y BD, realizar pruebas.      | MVP funcional                 |
+División más detallada para los aprendices
+
+Fase 1 — Épica + Historias
+
+Identificar el problema que resolverá el proyecto.
+Definir el objetivo general.
+Identificar actores/usuarios.
+Crear las épicas.
+Crear historias de usuario.
+Definir criterios de aceptación.
+Priorizar las historias para determinar qué entra en el MVP.
+
+Fase 2 — Requerimientos
+
+Requerimientos funcionales.
+Requerimientos no funcionales.
+Reglas de negocio.
+Restricciones.
+Criterios de aceptación.
+Matriz de trazabilidad entre historias y requerimientos.
+
+Fase 3 — UML
+
+Como mínimo:
+
+Diagrama de casos de uso.
+Diagrama de clases.
+Diagrama de secuencia.
+Diagrama de actividades.
+
+Dependiendo del proyecto, se pueden agregar:
+
+Diagrama de estados.
+Diagrama de componentes.
+Diagrama de despliegue.
+
+Fase 4 — Base de datos
+
+Identificar entidades.
+Definir atributos.
+Definir claves primarias.
+Definir relaciones.
+Normalizar.
+Crear modelo entidad-relación.
+Crear modelo lógico.
+Crear tablas.
+Crear restricciones.
+Crear script SQL.
+Insertar datos de prueba.
+
+Fase 5 — Mockup
+
+Definir estructura de navegación.
+Diseñar pantalla de inicio.
+Login/registro si aplica.
+Dashboard.
+Formularios.
+Listados.
+Consultas.
+Detalle de registros.
+Mensajes de error y confirmación.
+Prototipo navegable.
+
+Fase 6 — Programa funcional
+
+Aquí ya se pasa del diseño a la implementación:
