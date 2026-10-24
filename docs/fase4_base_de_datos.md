@@ -109,7 +109,7 @@ erDiagram
 | Campo | Tipo de Dato | Nulo | Clave | Valor por Defecto | Descripción |
 | :--- | :--- | :---: | :---: | :--- | :--- |
 | `id` | `INT` | NO | PK | `AUTO_INCREMENT` | Identificador único de la categoría. |
-| `name` | `VARCHAR(100)` | NO | UK | — | Nombre temático único (ej. Novela, Ciencia). |
+| `name` | `VARCHAR(50)` | NO | UK | — | Nombre temático único (ej. Novela, Ciencia). |
 | `description` | `TEXT` | SÍ | — | `NULL` | Detalle o alcance temático de la categoría. |
 | `created_at` | `TIMESTAMP` | NO | — | `CURRENT_TIMESTAMP` | Marca temporal de auditoría de creación. |
 
