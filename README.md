@@ -47,10 +47,14 @@ Gestion-de-biblioteca-virtual-/
 ├── README.md                                          <-- Portal principal del proyecto
 ├── .gitignore                                         <-- Filtro de archivos no rastreables
 │
+├── database/
+│   └── schema.sql                                    <-- Fase 4: Script SQL DDL/DML (MySQL / 3FN)
+│
 ├── docs/
 │   ├── fase1_historias_usuario.md                    <-- Fase 1: Épicas, Historias (HU-01 a HU-13), Gherkin y MoSCoW
 │   ├── fase2_especificacion_requerimientos_ieee830.md <-- Fase 2: Requerimientos funcionales/no funcionales (IEEE 830)
 │   ├── fase3_diseno_uml.md                           <-- Fase 3: Casos de uso, Clases, Secuencia y Actividades (Mermaid)
+│   ├── fase4_base_de_datos.md                        <-- Fase 4: Modelo relacional 3FN, Diagrama ER Mermaid y Diccionario
 │   ├── guia_git_equipo.md                            <-- Guía de colaboración Git y comandos para los aprendices
 │   │
 │   └── pdf/                                          <-- Respaldo histórico de entregas anteriores
@@ -63,6 +67,8 @@ Gestion-de-biblioteca-virtual-/
 - 📋 [**Fase 1: Épicas e Historias de Usuario**](docs/fase1_historias_usuario.md)
 - 📐 [**Fase 2: Especificación de Requerimientos (Norma IEEE 830)**](docs/fase2_especificacion_requerimientos_ieee830.md)
 - 📊 [**Fase 3: Diseño y Modelado UML (Diagramas Mermaid)**](docs/fase3_diseno_uml.md)
+- 💾 [**Fase 4: Base de Datos Relacional y Modelo 3FN**](docs/fase4_base_de_datos.md)
+- 🗄️ [**Script SQL Ejecutable (database/schema.sql)**](database/schema.sql)
 - 🛠️ [**Guía de Trabajo Colaborativo en Git**](docs/guia_git_equipo.md)
 
 ---
