@@ -58,6 +58,7 @@ El software es un sistema autónomo, modular y desacoplado, diseñado para ejecu
 - **RS-01 (Plataforma y Almacenamiento):** Desarrollado exclusivamente en lenguaje **Java**, gestionando colecciones en memoria (`ArrayList`) sin dependencia de motores de bases de datos relacionales en esta versión.
 - **RS-02 (Interfaz Operativa):** Ejecución confinada a la **consola de comandos (CLI)** estructurada en menús numéricos interactivos.
 - **RS-03 (Concurrencia):** Operación monousuario secuencial; el sistema asume un único operador en la estación de trabajo.
+- **RS-04 (Correspondencia Unívoca de Inventario):** Para el alcance del MVP, se establece una relación unívoca 1:1 entre el registro bibliográfico catalogado (`Libro`/`ISBN`) y el ejemplar físico en anaquel. Cada registro representa un único ejemplar físico en existencia. La administración de múltiples volúmenes o copias físicas asociadas a un mismo ISBN se delega a iteraciones posteriores (HU-13).
 
 ---
 
@@ -214,7 +215,7 @@ El software es un sistema autónomo, modular y desacoplado, diseñado para ejecu
 
 | Código | Regla de Negocio | Impacto en el Sistema |
 | :---: | :--- | :--- |
-| **RN-01** | **Unicidad del ISBN** | Cada libro debe poseer un ISBN irrepetible en el catálogo general. |
+| **RN-01** | **Unicidad del ISBN** | Cada libro debe poseer un ISBN irrepetible en el catálogo general. Bajo la restricción RS-04, cada registro de ISBN representa un único ejemplar físico en inventario. |
 | **RN-02** | **Unicidad del Identificador de Autor** | El código normalizado (ORCID/ISNI) del autor es único y no puede duplicarse. |
 | **RN-03** | **Unicidad del Documento de Usuario** | El documento de identidad de cada usuario registrado debe ser estrictamente único. |
 | **RN-04** | **Habilitación de Préstamos en MVP** | Un usuario únicamente puede recibir un préstamo si su estado en el sistema es `activo == true`. *(El bloqueo automatizado por acumulación de moras se reserva para el Sprint posterior HU-10)*. |

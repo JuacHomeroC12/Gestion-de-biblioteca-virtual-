@@ -18,7 +18,7 @@ USE digital_library;
 -- =============================================================================
 CREATE TABLE categories (
     id INT AUTO_INCREMENT PRIMARY KEY,
-    name VARCHAR(100) NOT NULL,
+    name VARCHAR(50) NOT NULL,
     description TEXT,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     CONSTRAINT uk_categories_name UNIQUE (name)
@@ -37,7 +37,7 @@ CREATE TABLE authors (
 ) ENGINE=InnoDB;
 
 -- =============================================================================
--- 3. TABLA: books (Catálogo de libros - RN-01, RN-05)
+-- 3. TABLA: books (Catálogo de libros - RN-01, RN-05, RS-04)
 -- =============================================================================
 CREATE TABLE books (
     id INT AUTO_INCREMENT PRIMARY KEY,
