@@ -37,7 +37,7 @@ CREATE TABLE authors (
 ) ENGINE=InnoDB;
 
 -- =============================================================================
--- 3. TABLA: books (Catálogo de libros - RN-01, RN-05)
+-- 3. TABLA: books (Catálogo de libros - RN-01, RN-05, RS-04)
 -- =============================================================================
 CREATE TABLE books (
     id INT AUTO_INCREMENT PRIMARY KEY,

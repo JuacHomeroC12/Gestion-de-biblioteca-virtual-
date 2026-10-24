@@ -47,6 +47,7 @@ Desarrollar un **Producto Mínimo Viable (MVP)** de un sistema de gestión bibli
 - **Como:** Bibliotecario.
 - **Quiero:** Agregar un nuevo libro al catálogo indicando su ID numérico, título, autor registrado, año de publicación, ISBN y categoría temática.
 - **Para:** Incorporarlo formalmente al inventario disponible para préstamo.
+> **Nota de Alcance e Inventario (MVP):** Conforme al alcance del Sprint 1, cada registro de libro representa simultáneamente la obra y su único ejemplar físico en biblioteca (1 ISBN = 1 Ejemplar). La administración de múltiples copias físicas por ISBN se contempla para iteraciones futuras (HU-13).
 - **Criterios de Aceptación (Gherkin):**
   - **CA-1 (Registro Exitoso):**  
     *Dado que* el bibliotecario ingresa los datos completos y válidos (ID único, título, autor existente, año de publicación, ISBN único y categoría),  

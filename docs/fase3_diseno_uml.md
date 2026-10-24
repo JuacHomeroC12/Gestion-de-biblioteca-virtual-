@@ -13,8 +13,8 @@
 La Fase 3 traduce las especificaciones funcionales y de negocio consolidadas en las Fases 1 y 2 en un modelo estructural y dinámico bajo el paradigma de **Programación Orientada a Objetos (POO)**. 
 
 El diseño se estructura en un patrón arquitectónico en tres capas desacopladas:
-1. **Capa de Modelo (Dominio):** Clases de entidad que representan la realidad del negocio con encapsulamiento estricto (`Autor`, `Libro`, `Usuario`, `Prestamo`).
-2. **Capa de Servicio (Lógica de Negocio):** Controlador transaccional (`GestionLibros`) que administra las colecciones dinámicas en memoria (`ArrayList`), ejecuta las validaciones y hace cumplir las reglas de negocio (RN-01 a RN-05).
+1. **Capa de Modelo (Dominio):** Clases de entidad que representan la realidad del negocio con encapsulamiento estricto (`Autor`, `Categoria`, `Libro`, `Usuario`, `Prestamo`).
+2. **Capa de Servicio (Lógica de Negocio Desacoplada - SRP):** Servicios especializados por dominio que administran las colecciones dinámicas en memoria (`ArrayList`), ejecutan las validaciones y hacen cumplir las reglas de negocio: `CatalogoService` (libros, autores y categorías; RN-01, RN-02), `UsuarioService` (padrón y validación de usuarios; RN-03, RN-04) y `PrestamoService` (transacciones de préstamo, devolución y verificación de disponibilidad; RN-05).
 3. **Capa de Presentación (Vista CLI):** Controlador de interfaz de consola (`SubmenuGestionLibros`) responsable de la interacción con el operador, captura segura con `Scanner` y presentación de menús.
 
 ---
@@ -74,9 +74,11 @@ classDiagram
 
     %% CAPA DE PRESENTACIÓN (VISTA)
     class SubmenuGestionLibros {
-        -gestionLibros: GestionLibros
+        -catalogoService: CatalogoService
+        -usuarioService: UsuarioService
+        -prestamoService: PrestamoService
         -scanner: Scanner
-        +SubmenuGestionLibros(gestionLibros: GestionLibros)
+        +SubmenuGestionLibros(catalogoService: CatalogoService, usuarioService: UsuarioService, prestamoService: PrestamoService)
         +mostrarMenu(): void
         -registrar(): void
         -buscarPorId(): void
@@ -88,27 +90,49 @@ classDiagram
         -imprimirLista(titulo: String, lista: List~Libro~): void
     }
 
-    %% CAPA DE SERVICIO (LÓGICA)
-    class GestionLibros {
+    %% CAPA DE SERVICIO (LÓGICA DESACOPLADA - SRP)
+    class CatalogoService {
         -listaLibros: List~Libro~
         -listaAutores: List~Autor~
-        -listaUsuarios: List~Usuario~
-        -listaPrestamos: List~Prestamo~
-        +GestionLibros()
+        -listaCategorias: List~Categoria~
+
+
+        +CatalogoService()
         +registrarAutor(autor: Autor): boolean
-        +registrarUsuario(usuario: Usuario): boolean
+        +registrarCategoria(categoria: Categoria): boolean
+
         +registrarLibro(libro: Libro): boolean
         +buscarPorId(id: int): Libro
         +buscarPorIsbn(isbn: String): Libro
         +buscarPorTitulo(titulo: String): List~Libro~
-        +modificarLibro(id: int, nuevoTitulo: String, nuevoAutor: Autor, nuevaCategoria: String): boolean
+        +modificarLibro(id: int, nuevoTitulo: String, nuevoAutor: Autor, nuevaCategoria: Categoria): boolean
         +eliminarLibro(id: int): boolean
         +consultarDisponibilidad(id: int): boolean
-        +realizarPrestamo(idLibro: int, documentoUsuario: String, dias: int): boolean
-        +registrarDevolucion(idPrestamo: int): boolean
+
+
         +obtenerListadoGeneral(): List~Libro~
         +obtenerLibrosDisponibles(): List~Libro~
         +obtenerLibrosPrestados(): List~Libro~
+    }
+
+    class UsuarioService {
+        -listaUsuarios: List~Usuario~
+        +UsuarioService()
+        +registrarUsuario(usuario: Usuario): boolean
+        +buscarPorDocumento(documento: String): Usuario
+        +isUsuarioActivo(documento: String): boolean
+        +obtenerListadoUsuarios(): List~Usuario~
+    }
+
+    class PrestamoService {
+        -catalogoService: CatalogoService
+        -usuarioService: UsuarioService
+        -listaPrestamos: List~Prestamo~
+        +PrestamoService(catalogoService: CatalogoService, usuarioService: UsuarioService)
+        +realizarPrestamo(idLibro: int, documentoUsuario: String, dias: int): boolean
+        +registrarDevolucion(idPrestamo: int): boolean
+        +buscarPrestamoActivoPorLibro(idLibro: int): Prestamo
+        +obtenerPrestamosActivos(): List~Prestamo~
     }
 
     %% CAPA DE MODELO (ENTIDADES)
@@ -126,15 +150,29 @@ classDiagram
         +toString(): String
     }
 
+    class Categoria {
+        -id: int
+        -nombre: String
+        -descripcion: String
+        +Categoria(id: int, nombre: String, descripcion: String)
+        +getId(): int
+        +setId(id: int): void
+        +getNombre(): String
+        +setNombre(nombre: String): void
+        +getDescripcion(): String
+        +setDescripcion(descripcion: String): void
+        +toString(): String
+    }
+
     class Libro {
         -id: int
         -titulo: String
         -isbn: String
         -autor: Autor
         -anioPublicacion: int
-        -categoria: String
+        -categoria: Categoria
         -disponible: boolean
-        +Libro(id: int, titulo: String, isbn: String, autor: Autor, anioPublicacion: int, categoria: String, disponible: boolean)
+        +Libro(id: int, titulo: String, isbn: String, autor: Autor, anioPublicacion: int, categoria: Categoria, disponible: boolean)
         +getId(): int
         +setId(id: int): void
         +getTitulo(): String
@@ -145,8 +183,8 @@ classDiagram
         +setAutor(autor: Autor): void
         +getAnioPublicacion(): int
         +setAnioPublicacion(anioPublicacion: int): void
-        +getCategoria(): String
-        +setCategoria(categoria: String): void
+        +getCategoria(): Categoria
+        +setCategoria(categoria: Categoria): void
         +isDisponible(): boolean
         +setDisponible(disponible: boolean): void
         +toString(): String
@@ -173,30 +211,39 @@ classDiagram
         -idPrestamo: int
         -usuario: Usuario
         -libro: Libro
-        -fechaPrestamo: String
-        -fechaLimiteDevolucion: String
+        -fechaPrestamo: LocalDate
+        -fechaLimiteDevolucion: LocalDate
+        -fechaDevolucion: LocalDate
         -estado: String
-        +Prestamo(idPrestamo: int, usuario: Usuario, libro: Libro, fechaPrestamo: String, fechaLimiteDevolucion: String)
+        +Prestamo(idPrestamo: int, usuario: Usuario, libro: Libro, fechaPrestamo: LocalDate, fechaLimiteDevolucion: LocalDate)
         +getIdPrestamo(): int
         +getUsuario(): Usuario
         +setUsuario(usuario: Usuario): void
         +getLibro(): Libro
         +setLibro(libro: Libro): void
-        +getFechaPrestamo(): String
-        +getFechaLimiteDevolucion(): String
+        +getFechaPrestamo(): LocalDate
+        +getFechaLimiteDevolucion(): LocalDate
+        +getFechaDevolucion(): LocalDate
+        +setFechaDevolucion(fechaDevolucion: LocalDate): void
         +getEstado(): String
         +setEstado(estado: String): void
-        +finalizarPrestamo(): void
+        +finalizarPrestamo(fechaDevolucion: LocalDate): void
         +toString(): String
     }
 
     %% RELACIONES
-    SubmenuGestionLibros ..> GestionLibros : invoca métodos
-    GestionLibros o-- Libro : administra lista
-    GestionLibros o-- Autor : administra lista
-    GestionLibros o-- Usuario : administra lista
-    GestionLibros o-- Prestamo : administra lista
+    SubmenuGestionLibros ..> CatalogoService : consulta y gestiona
+    SubmenuGestionLibros ..> UsuarioService : consulta y gestiona
+    SubmenuGestionLibros ..> PrestamoService : transacciones
+    PrestamoService ..> CatalogoService : valida y actualiza disponibilidad
+    PrestamoService ..> UsuarioService : valida estado de habilitación
+    CatalogoService o-- Libro : administra lista
+    CatalogoService o-- Autor : administra lista
+    CatalogoService o-- Categoria : administra lista
+    UsuarioService o-- Usuario : administra lista
+    PrestamoService o-- Prestamo : administra lista
     Libro --> "1" Autor : escrito por
+    Libro --> "1" Categoria : clasificado en
     Prestamo --> "1" Libro : involucra
     Prestamo --> "1" Usuario : realizado a
 ```
@@ -213,7 +260,9 @@ sequenceDiagram
     autonumber
     actor B as Bibliotecario
     participant V as :SubmenuGestionLibros
-    participant S as :GestionLibros
+    participant S as :PrestamoService
+    participant US as :UsuarioService
+    participant CS as :CatalogoService
     participant U as u:Usuario
     participant L as l:Libro
     participant P as p:Prestamo
@@ -223,11 +272,15 @@ sequenceDiagram
     B ->> V: Ingresa datos requeridos
     V ->> S: realizarPrestamo(idLibro, docUsuario, dias)
     
-    S ->> U: isActivo()
-    U -->> S: true (Usuario Habilitado)
+    S ->> US: isUsuarioActivo(docUsuario)
+    US ->> U: isActivo()
+    U -->> US: true
+    US -->> S: true (Usuario Habilitado)
     
-    S ->> L: isDisponible()
-    L -->> S: true (Ejemplar en Anaquel)
+    S ->> CS: consultarDisponibilidad(idLibro)
+    CS ->> L: isDisponible()
+    L -->> CS: true
+    CS -->> S: true (Ejemplar en Anaquel)
     
     create participant P
     S ->> P: new Prestamo(id, u, l, fechaActual, fechaLimite)
@@ -249,7 +302,7 @@ sequenceDiagram
     autonumber
     actor B as Bibliotecario
     participant V as :SubmenuGestionLibros
-    participant S as :GestionLibros
+    participant S as :PrestamoService
     participant P as p:Prestamo
     participant L as l:Libro
 
@@ -261,7 +314,7 @@ sequenceDiagram
     S ->> P: getEstado()
     P -->> S: "Activo"
     
-    S ->> P: finalizarPrestamo()
+    S ->> P: finalizarPrestamo(fechaActual)
     P -->> S: void
     
     S ->> P: getLibro()
@@ -284,23 +337,23 @@ sequenceDiagram
     autonumber
     actor B as Bibliotecario
     participant V as :SubmenuGestionLibros
-    participant S as :GestionLibros
+    participant C as :CatalogoService
     participant L as l:Libro
 
     B ->> V: Selecciona "Eliminar Libro"
     V -->> B: Solicita ID del Libro
     B ->> V: Ingresa ID del Libro
-    V ->> S: eliminarLibro(idLibro)
+    V ->> C: eliminarLibro(idLibro)
     
-    S ->> L: isDisponible()
+    C ->> L: isDisponible()
     alt Libro Prestado (disponible == false)
-        L -->> S: false (Prestado)
-        S -->> V: false (Operación denegada por RN-05)
+        L -->> C: false (Prestado)
+        C -->> V: false (Operación denegada por RN-05)
         V -->> B: Alerta "No se puede eliminar un libro con préstamo activo"
     else Libro Disponible (disponible == true)
-        L -->> S: true (Disponible)
-        S ->> S: listaLibros.remove(l)
-        S -->> V: true
+        L -->> C: true (Disponible)
+        C ->> C: listaLibros.remove(l)
+        C -->> V: true
         V -->> B: Muestra "Libro eliminado del catálogo exitosamente"
     end
 ```

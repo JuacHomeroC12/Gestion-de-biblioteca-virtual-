@@ -16,6 +16,7 @@ En estricto cumplimiento con la retroalimentación técnica del instructor Carlo
 1. **Nomenclatura Estándar:** Las tablas se nombran en **plural** (`categories`, `authors`, `books`, `users`, `loans`) y todos los campos se encuentran estructurados en **idioma inglés**.
 2. **Calidad Arquitectónica:** El esquema implementa **Tercera Forma Normal (3FN)**, eliminando redundancias, anomalías de inserción, actualización y borrado.
 3. **Integridad Referencial:** Claves foráneas protegidas con políticas `ON UPDATE CASCADE` y `ON DELETE RESTRICT` para blindar las reglas de negocio del sistema.
+4. **Correspondencia de Inventario (RS-04):** Conforme al alcance del MVP, cada fila en `books` representa un ejemplar físico individual (`is_available`), garantizando estricta coherencia con las restricciones y supuestos de las Fases 1, 2 y 3.
 
 ---
 
