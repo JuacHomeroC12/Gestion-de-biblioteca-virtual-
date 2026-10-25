@@ -14,8 +14,7 @@
 | :--- | :--- | :--- |
 | **Juan David Romero Calderón** | Líder de Proyecto / Especificación Ágil | [@JuacHomeroC12](https://github.com/JuacHomeroC12) |
 | **Juan Diego Oteca Pedreros** | Analista de Requerimientos de Software | [@joteca3-afk](https://github.com/joteca3-afk) |
-| **Jhojan Javier Melo Avella** | Diseñador y Modelador de Software (UML) | Contribuidor |
-
+| **Jhojan Javier Melo Avella** | Diseñador y Modelador de Software (UML) | [@Melo-JJMA](https://github.com/Melo-JJMA) |
 ---
 
 ## 📖 Descripción General del Proyecto
