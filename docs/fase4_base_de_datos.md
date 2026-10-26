@@ -164,6 +164,7 @@ erDiagram
 | `due_date` | `DATE` | NO | — | — | Fecha máxima pactada para devolución. |
 | `return_date` | `DATE` | SÍ | — | `NULL` | Fecha en que el libro fue reintegrado. |
 | `status` | `VARCHAR(20)` | NO | — | `'ACTIVE'` | `'ACTIVE'`, `'RETURNED'` o `'OVERDUE'`. |
+| `active_book_id` | `INT` | SÍ | UK | `VIRTUAL` | Columna generada: `IF(status = 'ACTIVE', book_id, NULL)`. Garantiza unicidad de préstamos activos (un solo ACTIVE por libro). Los préstamos devueltos se evalúan a NULL permitiendo múltiples registros históricos sin conflicto. |
 | `notes` | `TEXT` | SÍ | — | `NULL` | Observaciones sobre el estado del libro. |
 | `created_at` | `TIMESTAMP` | NO | — | `CURRENT_TIMESTAMP` | Registro transaccional en el sistema. |
 
@@ -177,6 +178,7 @@ erDiagram
 | **RN-02** | Unicidad de Identificador de Autor | Restricción `CONSTRAINT uk_authors_code UNIQUE (author_code)`. |
 | **RN-03** | Unicidad de Documento de Usuario | Restricción `CONSTRAINT uk_users_document UNIQUE (document_number)`. |
 | **RN-04** | Usuario Habilitado | Restricción lógica `users.is_active = TRUE` en consultas de asignación de préstamos. |
+| **RN-05 (Integridad)** | Unicidad de Préstamo Activo | Restricción física `CONSTRAINT uk_loans_active_book UNIQUE (active_book_id)` que impide a nivel de base de datos registrar dos préstamos activos del mismo libro simultáneamente. |
 | **RN-05** | Integridad de Ejemplares en Préstamo | **Baja lógica (Soft Delete):** La eliminación se implementa como `UPDATE books SET is_deleted = TRUE`. La FK `fk_loans_books ON DELETE RESTRICT` se mantiene para preservar el historial de préstamos en `loans`. La validación previa comprueba que `is_available = TRUE` antes de ejecutar la baja; si el libro tiene préstamo activo (`is_available = FALSE`), la operación es bloqueada por la lógica de negocio. |
 
 ---
