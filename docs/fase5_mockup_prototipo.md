@@ -32,16 +32,18 @@ flowchart TD
     Inicio([Inicio del Sistema]) --> MenuPrincipal[Menú Principal del Sistema]
     
     MenuPrincipal --> Op1[1. Registrar Nuevo Libro]
-    MenuPrincipal --> Op2[2. Buscar Libro por ID]
-    MenuPrincipal --> Op3[3. Buscar Libro por Título o Autor]
-    MenuPrincipal --> Op4[4. Modificar Libro Existente]
-    MenuPrincipal --> Op5[5. Eliminar Libro del Catálogo]
-    MenuPrincipal --> Op6[6. Gestión de Préstamos y Devoluciones]
-    MenuPrincipal --> Op7[7. Módulo de Reportes Rápidos]
+    MenuPrincipal --> Op2[2. Registrar Nuevo Autor]
+    MenuPrincipal --> Op3[3. Registrar Nuevo Usuario]
+    MenuPrincipal --> Op4[4. Buscar Libro por ID]
+    MenuPrincipal --> Op5[5. Buscar Libros por Título o Autor]
+    MenuPrincipal --> Op6[6. Modificar Libro Existente]
+    MenuPrincipal --> Op7[7. Dar de Baja Libro - Baja Lógica]
+    MenuPrincipal --> Op8[8. Gestión de Préstamos y Devoluciones]
+    MenuPrincipal --> Op9[9. Módulo de Reportes Rápidos]
     MenuPrincipal --> Op0[0. Salir de la Aplicación]
 
     %% Flujos de Gestión Transaccional
-    Op6 --> SubmenuPrestamos{Submenú Transacciones}
+    Op8 --> SubmenuPrestamos{Submenú Transacciones}
     SubmenuPrestamos --> SP1[1. Registrar Salida: Prestar Libro]
     SubmenuPrestamos --> SP2[2. Registrar Entrada: Devolución]
     SubmenuPrestamos --> SP3[3. Consultar Disponibilidad de Ejemplar]
@@ -49,19 +51,21 @@ flowchart TD
     SP0 --> MenuPrincipal
 
     %% Flujos de Reportes
-    Op7 --> SubmenuReportes{Submenú de Reportes}
-    SubmenuReportes --> SR1[1. Listado General de Libros]
+    Op9 --> SubmenuReportes{Submenú de Reportes}
+    SubmenuReportes --> SR1[1. Listado General Activo]
     SubmenuReportes --> SR2[2. Listado de Libros Disponibles]
-    SubmenuReportes --> SR3[3. Listado de Libros Prestados]
+    SubmenuReportes --> SR3[3. Listado de Préstamos en Curso]
     SubmenuReportes --> SR0[0. Volver al Menú Principal]
     SR0 --> MenuPrincipal
 
     %% Retornos
     Op1 --> Ret1[Confirmación / Alerta] --> MenuPrincipal
-    Op2 --> Ret2[Ficha de Detalle] --> MenuPrincipal
-    Op3 --> Ret3[Tabla de Coincidencias] --> MenuPrincipal
-    Op4 --> Ret4[Confirmación Edición] --> MenuPrincipal
-    Op5 --> Ret5[Confirmación / Bloqueo] --> MenuPrincipal
+    Op2 --> Ret2[Confirmación Autor] --> MenuPrincipal
+    Op3 --> Ret3[Confirmación Usuario] --> MenuPrincipal
+    Op4 --> Ret4[Ficha de Detalle] --> MenuPrincipal
+    Op5 --> Ret5[Tabla de Coincidencias] --> MenuPrincipal
+    Op6 --> Ret6[Confirmación Edición] --> MenuPrincipal
+    Op7 --> Ret7[Confirmación Baja Lógica] --> MenuPrincipal
     SP1 --> MenuPrincipal
     SP2 --> MenuPrincipal
     SP3 --> MenuPrincipal
@@ -86,15 +90,17 @@ Esta es la vista raíz que recibe al bibliotecario al iniciar la aplicación:
  Operador Activo: Bibliotecario de Turno | Fecha del Sistema: 2026-10-25
 --------------------------------------------------------------------------------
  [1] Registrar nuevo libro en catálogo
- [2] Buscar libro por ID
- [3] Buscar libros por Título o Autor
- [4] Modificar datos de libro
- [5] Eliminar libro del catálogo (Baja física)
- [6] Gestión de Préstamos y Devoluciones (Transacciones)
- [7] Módulo de Reportes y Listados
+ [2] Registrar nuevo autor
+ [3] Registrar nuevo usuario prestatario
+ [4] Buscar libro por ID
+ [5] Buscar libros por Título o Autor
+ [6] Modificar datos de libro
+ [7] Dar de baja libro del catálogo (Baja lógica)
+ [8] Gestión de Préstamos y Devoluciones (Transacciones)
+ [9] Módulo de Reportes y Listados
  [0] Salir del sistema
 ================================================================================
- Ingrese una opción numérica (0-7): _
+ Ingrese una opción numérica (0-9): _
 ```
 
 ---
@@ -110,7 +116,7 @@ Captura secuencial de atributos unificados con validaciones en línea:
 --------------------------------------------------------------------------------
  Ingrese ID numérico del libro: 101
  Ingrese Título: Cien años de soledad
- Ingrese Identificador del Autor (ORCID/ISNI): 0000-0002-1825-0097
+ Ingrese Identificador del Autor (ISNI): 0000-0001-2141-4109
  Ingrese Año de Publicación: 1967
  Ingrese Código ISBN: 978-0307474728
  Ingrese Categoría temática: Novela y Ficción
@@ -129,7 +135,7 @@ Formulario invocado al catalogar un autor nuevo:
 --------------------------------------------------------------------------------
                      FORMULARIO: REGISTRO DE AUTOR
 --------------------------------------------------------------------------------
- Ingrese Código Normalizado (ORCID/ISNI): 0000-0002-1825-0097
+ Ingrese Código Normalizado (ISNI): 0000-0001-2141-4109
  Ingrese Nombre Completo: Gabriel García Márquez
  Ingrese Nacionalidad: Colombiana
 --------------------------------------------------------------------------------
@@ -247,7 +253,7 @@ Formato de tabla con encabezados y alineación uniforme:
 
 ---
 
-### 5.3. Reporte de Préstamos Activos (HU-09 / Submenú 7)
+### 5.3. Reporte de Préstamos Activos (HU-09 / Submenú 9)
 
 ```text
 ================================================================================
@@ -294,14 +300,14 @@ sequenceDiagram
     participant F as Formulario de Préstamos
     participant R as Reporte de Disponibilidad
 
-    B ->> CLI: 1. Selecciona Opción [6] (Gestión de Préstamos)
+    B ->> CLI: 1. Selecciona Opción [8] (Gestión de Préstamos)
     CLI -->> B: Despliega Submenú Transaccional
     B ->> F: 2. Selecciona Opción [1] (Prestar Libro)
     F -->> B: Solicita Documento de Usuario e ID del Libro
     B ->> F: Digita Documento: 1075248911, ID: 101, Días: 10
     F -->> B: [✔ ÉXITO] Préstamo #1001 Registrado. Libro pasa a NO DISPONIBLE.
     B ->> CLI: 3. Regresa al Menú Principal [0]
-    B ->> R: 4. Selecciona Opción [7] -> Reporte de Disponibilidad
+    B ->> R: 4. Selecciona Opción [9] -> Reporte de Disponibilidad
     R -->> B: Muestra tabla con el Libro 101 como "Prestado"
     B ->> CLI: 5. Selecciona Opción [0] para Salir de la Aplicación
 ```
