@@ -225,29 +225,33 @@ Desarrollar un **Producto Mínimo Viable (MVP)** de un sistema de gestión bibli
 
 ## 6. Especificación de la Interfaz de Consola (Manual de Usuario del Menú CLI)
 
-El sistema presenta una navegación jerárquica limpia, orientada a eventos mediante teclado:
+El sistema presenta una navegación jerárquica limpia, orientada a eventos mediante teclado, cubriendo la totalidad de historias del MVP (HU-01 a HU-08):
 
-```
+```text
 ==================================================
         SISTEMA DE BIBLIOTECA DIGITAL (MVP)
 ==================================================
 1. Registrar nuevo libro
-2. Buscar libro por ID
-3. Buscar libro por Título o Autor
-4. Modificar libro existente
-5. Eliminar libro del catálogo
-6. Consultar disponibilidad y gestionar préstamo
-7. Módulo de reportes rápidos (Disponibles / Prestados)
+2. Registrar nuevo autor
+3. Registrar nuevo usuario prestatario
+4. Buscar libro por ID
+5. Buscar libros por Título o Autor
+6. Modificar libro existente
+7. Dar de baja libro del catálogo (Baja lógica)
+8. Gestión de Préstamos y Devoluciones
+9. Módulo de reportes rápidos
 0. Salir del sistema
 ==================================================
 Seleccione una opción: 
 ```
 
-- **Opción 1:** Solicita `ID, Título, Autor (Identificador), Año de Publicación, ISBN y Categoría`. Asigna `disponible = true`.
-- **Opción 2:** Solicita el ID numérico y muestra la ficha completa del ejemplar junto a los datos del autor asociado.
-- **Opción 3:** Búsqueda abierta por coincidencia parcial de texto en título o nombre del autor.
-- **Opción 4:** Permite modificar título, autor o categoría manteniendo inalterado el ID base.
-- **Opción 5:** Solicita ID del libro. Valida si tiene préstamo activo antes de ejecutar la baja física.
-- **Opción 6:** Muestra el estado del ejemplar y ofrece el submenú transaccional directo: `1. Realizar Préstamo | 2. Registrar Devolución | 0. Volver`.
-- **Opción 7:** Despliega submenú de visualización: `1. Listado General | 2. Sólo Disponibles | 3. Sólo Prestados`.
+- **Opción 1 (HU-01):** Solicita `ID, Título, Identificador de Autor, Año de Publicación, ISBN y Categoría`. Asigna `disponible = true`.
+- **Opción 2 (HU-02):** Solicita `Identificador normalizado (ISNI/ORCID), Nombre completo y Nacionalidad`. Registra al autor en el catálogo maestro.
+- **Opción 3 (HU-03):** Solicita `Documento de identidad, Nombre completo y Teléfono`. Da de alta al prestatario con estado inicial `activo = true`.
+- **Opción 4 (HU-04):** Solicita el ID numérico y muestra la ficha completa del ejemplar junto a los datos del autor asociado y su estado de disponibilidad.
+- **Opción 5 (HU-07):** Búsqueda abierta por coincidencia parcial de texto en título o nombre del autor.
+- **Opción 6 (HU-08):** Permite modificar título, autor o categoría manteniendo inalterado el ID base.
+- **Opción 7 (HU-08):** Solicita ID del libro. Valida que cuente con estado "Disponible" (`is_available = true` y sin préstamos activos) y ejecuta la **baja lógica** (`is_deleted = true`), conservando el historial transaccional para auditoría.
+- **Opción 8 (HU-05 / HU-06):** Despliega el submenú transaccional directo: `1. Realizar Préstamo | 2. Registrar Devolución | 3. Consultar Disponibilidad | 0. Volver`.
+- **Opción 9:** Despliega submenú de reportes: `1. Listado General Activo | 2. Sólo Disponibles | 3. Préstamos en Curso | 0. Volver`.
 - **Opción 0:** Cierra ordenadamente la aplicación liberando recursos en memoria.
