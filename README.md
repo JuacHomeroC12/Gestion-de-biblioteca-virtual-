@@ -13,7 +13,7 @@
 | Integrante | Rol en el Proyecto | Usuario GitHub |
 | :--- | :--- | :--- |
 | **Juan David Romero Calderón** | Líder de Proyecto / Especificación Ágil | [@JuacHomeroC12](https://github.com/JuacHomeroC12) |
-| **Juan Diego Oteca Pedreros** | Analista de Requerimientos de Software | Contribuidor |
+| **Juan Diego Oteca Pedreros** | Analista de Requerimientos y Base de Datos | Contribuidor |
 | **Jhojan Javier Melo Avella** | Diseñador y Modelador de Software (UML) | Contribuidor |
 
 ---

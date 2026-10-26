@@ -18,6 +18,8 @@ gitGraph
    commit id: "docs: Juan David (Fase 1)"
    commit id: "docs: Juan Diego (Fase 2)"
    commit id: "docs: Jhojan (Fase 3)"
+   commit id: "docs: Juan Diego (Fase 4 BD)"
+   commit id: "docs: Juan David (Fase 5 CLI)"
    checkout main
    merge develop id: "Release 1.0 (100/100)"
 ```
@@ -33,9 +35,9 @@ Para que el instructor Carlos Julio evidencie el aporte equitativo en la pestañ
 
 | Integrante | Rol | Archivo Principal Asignado | Tipo de Commit Convencional |
 | :--- | :--- | :--- | :--- |
-| **Juan David Romero** | Líder / Product Owner | `README.md`<br>`docs/fase1_historias_usuario.md`<br>`.gitignore` | `docs(fase1): estructurar historias de usuario y matriz moscow` |
-| **Juan Diego Oteca** | Analista de Requerimientos | `docs/fase2_especificacion_requerimientos_ieee830.md` | `docs(fase2): formalizar especificacion requerimientos ieee 830` |
-| **Jhojan Javier Melo** | Diseñador de Software | `docs/fase3_diseno_uml.md`<br>`docs/guia_git_equipo.md` | `docs(fase3): modelar diagramas uml con sintaxis mermaid` |
+| **Juan David Romero** | Líder / Product Owner | `README.md`<br>`docs/fase1_historias_usuario.md`<br>`docs/fase5_mockup_prototipo.md`<br>`.gitignore` | `docs(fase1): estructurar historias de usuario y matriz moscow`<br>`docs(fase5): modelar prototipo interactivo cli y navegacion` |
+| **Juan Diego Oteca** | Analista de Requerimientos y Datos | `docs/fase2_especificacion_requerimientos_ieee830.md`<br>`docs/fase4_base_de_datos.md`<br>`database/schema.sql` | `docs(fase2): formalizar especificacion requerimientos ieee 830`<br>`feat(fase4-sql): implementar esquema relacional 3fn y seed data` |
+| **Jhojan Javier Melo** | Diseñador de Software y UML | `docs/fase3_diseno_uml.md`<br>`docs/guia_git_equipo.md` | `docs(fase3): modelar diagramas uml con sintaxis mermaid` |
 
 ---
 
@@ -137,8 +139,8 @@ Cuando todos los commits estén en `develop`:
    - **Base:** `main`
    - **Compare:** `develop`
 4. **Título del Pull Request:**  
-   `docs: Refactorización integral de documentación técnica (Fases 1 a 3) - Grupo 08`
-5. **Descripción:** Resumen del trabajo realizado (Fase 1 con MoSCoW, Fase 2 IEEE 830, Fase 3 UML Mermaid).
+   `docs: Consolidación integral de documentación técnica (Fases 1 a 5) y base de datos relacional - Grupo 08`
+5. **Descripción:** Resumen del trabajo realizado (Fase 1 MoSCoW y manual CLI, Fase 2 IEEE 830 y reglas de negocio, Fase 3 UML Mermaid, Fase 4 Base de Datos Relacional 3FN y Fase 5 Mockups y Navegación CLI).
 6. Asignen como revisores a los demás integrantes para simular la revisión de pares.
 7. Hagan clic en **Merge Pull Request** y confirmen la fusión.
 
