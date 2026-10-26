@@ -56,6 +56,7 @@ CREATE TABLE books (
     is_available BOOLEAN NOT NULL DEFAULT TRUE,
     is_deleted BOOLEAN NOT NULL DEFAULT FALSE,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    CONSTRAINT chk_books_year CHECK (publication_year BETWEEN 1000 AND 2100),
     CONSTRAINT uk_books_isbn UNIQUE (isbn),
     CONSTRAINT fk_books_authors FOREIGN KEY (author_id) 
         REFERENCES authors(id) 
@@ -123,10 +124,10 @@ INSERT INTO categories (name, description) VALUES
 ('Ciencia y Tecnologia', 'Libros de informatica, matematicas e ingenieria.'),
 ('Historia y Filosofia', 'Ensayos historicos, cronicas y pensamiento filosofico.');
 
--- Insercion de Autores
+-- Insercion de Autores (Identificadores normalizados ISNI para literatura y ORCID para tecnico)
 INSERT INTO authors (author_code, name, nationality) VALUES
-('0000-0002-1825-0097', 'Gabriel Garcia Marquez', 'Colombiana'),
-('0000-0001-5932-8411', 'Miguel de Cervantes Saavedra', 'Espanola'),
+('0000-0001-2141-4109', 'Gabriel Garcia Marquez', 'Colombiana'),
+('0000-0001-2144-5430', 'Miguel de Cervantes Saavedra', 'Espanola'),
 ('0000-0003-4512-9901', 'Robert C. Martin', 'Estadounidense');
 
 -- Insercion de Libros (is_deleted = FALSE por defecto en todos)
@@ -169,7 +170,7 @@ JOIN categories c ON b.category_id = c.id
 WHERE b.is_deleted = FALSE
 ORDER BY b.title ASC;
 
--- Consulta 2: Libros en prestamo activo con datos del prestatario (RF-05 / HU-09)
+-- Consulta 2: Libros en prestamo activo con datos del prestatario (RF-05)
 SELECT 
     l.id AS loan_id,
     b.title AS book_title,
