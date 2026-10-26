@@ -137,6 +137,7 @@ erDiagram
 | `category_id` | `INT` | NO | FK | — | Referencia a `categories(id)`. |
 | `publication_year`| `INT` | NO | — | — | Año de publicación del ejemplar. |
 | `is_available` | `BOOLEAN` | NO | — | `TRUE` | `1` = En estantería, `0` = Prestado (RN-05). |
+| `is_deleted` | `BOOLEAN` | NO | — | `FALSE` | `0` = Activo en catálogo. `1` = Baja lógica aplicada (Soft Delete). El registro no se borra físicamente para preservar el historial de préstamos. |
 | `created_at` | `TIMESTAMP` | NO | — | `CURRENT_TIMESTAMP` | Fecha de catalogación. |
 
 ---
@@ -176,7 +177,7 @@ erDiagram
 | **RN-02** | Unicidad de Identificador de Autor | Restricción `CONSTRAINT uk_authors_code UNIQUE (author_code)`. |
 | **RN-03** | Unicidad de Documento de Usuario | Restricción `CONSTRAINT uk_users_document UNIQUE (document_number)`. |
 | **RN-04** | Usuario Habilitado | Restricción lógica `users.is_active = TRUE` en consultas de asignación de préstamos. |
-| **RN-05** | Integridad de Libro Prestado | Clave foránea `fk_loans_books` con `ON DELETE RESTRICT` y validación de `is_available = TRUE`. |
+| **RN-05** | Integridad de Ejemplares en Préstamo | **Baja lógica (Soft Delete):** La eliminación se implementa como `UPDATE books SET is_deleted = TRUE`. La FK `fk_loans_books ON DELETE RESTRICT` se mantiene para preservar el historial de préstamos en `loans`. La validación previa comprueba que `is_available = TRUE` antes de ejecutar la baja; si el libro tiene préstamo activo (`is_available = FALSE`), la operación es bloqueada por la lógica de negocio. |
 
 ---
 
