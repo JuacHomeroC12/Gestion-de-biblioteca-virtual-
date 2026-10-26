@@ -55,6 +55,7 @@ Gestion-de-biblioteca-virtual-/
 │   ├── fase2_especificacion_requerimientos_ieee830.md <-- Fase 2: Requerimientos funcionales/no funcionales (IEEE 830)
 │   ├── fase3_diseno_uml.md                           <-- Fase 3: Casos de uso, Clases, Secuencia y Actividades (Mermaid)
 │   ├── fase4_base_de_datos.md                        <-- Fase 4: Modelo relacional 3FN, Diagrama ER Mermaid y Diccionario
+│   ├── fase5_mockup_prototipo.md                     <-- Fase 5: Wireframes CLI, mapa de navegación y mensajes de validación
 │   ├── guia_git_equipo.md                            <-- Guía de colaboración Git y comandos para los aprendices
 │   │
 │   └── pdf/                                          <-- Respaldo histórico de entregas anteriores
@@ -68,6 +69,7 @@ Gestion-de-biblioteca-virtual-/
 - 📐 [**Fase 2: Especificación de Requerimientos (Norma IEEE 830)**](docs/fase2_especificacion_requerimientos_ieee830.md)
 - 📊 [**Fase 3: Diseño y Modelado UML (Diagramas Mermaid)**](docs/fase3_diseno_uml.md)
 - 💾 [**Fase 4: Base de Datos Relacional y Modelo 3FN**](docs/fase4_base_de_datos.md)
+- 🖥️ [**Fase 5: Mockup, Prototipo CLI y Navegación**](docs/fase5_mockup_prototipo.md)
 - 🗄️ [**Script SQL Ejecutable (database/schema.sql)**](database/schema.sql)
 - 🛠️ [**Guía de Trabajo Colaborativo en Git**](docs/guia_git_equipo.md)
 
