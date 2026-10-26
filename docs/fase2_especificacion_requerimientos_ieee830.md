@@ -149,7 +149,7 @@ El software es un sistema autónomo, modular y desacoplado, diseñado para ejecu
   7. El sistema instancia el objeto de préstamo con estado `"Activo"`, lo agrega a la lista de préstamos y muestra `"Préstamo registrado exitosamente"`.
 - **Flujos de Excepción:**
   - *Usuario Inhabilitado:* Si el usuario tiene `activo == false`, el sistema bloquea el préstamo con `"Usuario no habilitado para préstamos"`.
-  - *Libro Prestado:* Si el libro ya está prestado, emite `"El libro seleccionado no cuenta con existencias disponibles para préstamo"`.
+  - *Libro Prestado:* Si el libro ya está prestado, emite `"El libro seleccionado no cuenta con existencias disponibles para préstamo"`. A nivel de base de datos relacional, esta regla está blindada por la restricción de unicidad física `uk_loans_active_book` que impide registrar más de un préstamo activo del mismo libro simultáneamente.
 
 ---
 
