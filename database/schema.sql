@@ -91,9 +91,11 @@ CREATE TABLE loans (
     due_date DATE NOT NULL,
     return_date DATE NULL,
     status VARCHAR(20) NOT NULL DEFAULT 'ACTIVE',
+    active_book_id INT GENERATED ALWAYS AS (IF(status = 'ACTIVE', book_id, NULL)) VIRTUAL,
     notes TEXT NULL,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     CONSTRAINT chk_loans_status CHECK (status IN ('ACTIVE', 'RETURNED', 'OVERDUE')),
+    CONSTRAINT uk_loans_active_book UNIQUE (active_book_id),
     CONSTRAINT fk_loans_books FOREIGN KEY (book_id) 
         REFERENCES books(id) 
         ON UPDATE CASCADE 
@@ -205,3 +207,15 @@ WHERE l.book_id = 2;
 -- La siguiente query NO debe ejecutarse en produccion; es solo demostrativa:
 -- UPDATE books SET is_deleted = TRUE WHERE id = 1 AND is_available = TRUE;
 -- Resultado esperado: 0 rows affected (la condicion is_available=TRUE no se cumple).
+
+-- =============================================================================
+-- CONSULTAS DE VERIFICACION: UNICIDAD DE PRESTAMO ACTIVO POR LIBRO
+-- =============================================================================
+
+-- Verificacion 4: El libro 1 ya tiene un prestamo 'ACTIVE' (id=1).
+-- El siguiente intento de registrar otro prestamo activo para el mismo libro
+-- es BLOQUEADO directamente por el motor MySQL mediante la restriccion uk_loans_active_book:
+-- INSERT INTO loans (book_id, user_id, loan_date, due_date, status) 
+-- VALUES (1, 2, '2026-10-26', '2026-11-05', 'ACTIVE');
+-- Resultado esperado: ERROR 1062 (23000): Duplicate entry '1' for key 'uk_loans_active_book'
+
