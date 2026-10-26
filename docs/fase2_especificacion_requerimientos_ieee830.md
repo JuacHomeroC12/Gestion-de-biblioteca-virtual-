@@ -194,7 +194,7 @@ El software es un sistema autónomo, modular y desacoplado, diseñado para ejecu
 - **Flujo Alternativo (Eliminación / Baja):**
   1. El bibliotecario selecciona eliminar el libro mediante su ID.
   2. El sistema valida que el libro posea estado `disponible == true` (RN-05).
-  3. El sistema suprime el registro del catálogo y confirma `"Libro eliminado del catálogo"`.
+  3. El sistema ejecuta una **baja lógica** (`UPDATE books SET is_deleted = true`) y confirma `"Libro dado de baja del catálogo"`. El registro se conserva en base de datos para auditoría de historial de préstamos.
 - **Flujos de Excepción:**
   - *Eliminación Denegada por Préstamo Vigente:* Si el libro tiene `disponible == false`, el sistema cancela la operación con la alerta `"No se puede eliminar un libro que tiene un préstamo activo"`.
 
@@ -219,7 +219,7 @@ El software es un sistema autónomo, modular y desacoplado, diseñado para ejecu
 | **RN-02** | **Unicidad del Identificador de Autor** | El código normalizado (ORCID/ISNI) del autor es único y no puede duplicarse. |
 | **RN-03** | **Unicidad del Documento de Usuario** | El documento de identidad de cada usuario registrado debe ser estrictamente único. |
 | **RN-04** | **Habilitación de Préstamos en MVP** | Un usuario únicamente puede recibir un préstamo si su estado en el sistema es `activo == true`. *(El bloqueo automatizado por acumulación de moras se reserva para el Sprint posterior HU-10)*. |
-| **RN-05** | **Integridad de Ejemplares en Préstamo** | Queda estrictamente prohibido eliminar del inventario cualquier libro que figure con estado `"No disponible"` (`disponible == false`). |
+| **RN-05** | **Integridad de Ejemplares en Préstamo** | Queda estrictamente prohibido dar de baja cualquier libro con estado `"No disponible"` (`disponible == false`, préstamo activo). La baja de un libro disponible se implementa como **baja lógica** (`is_deleted = true`), preservando el historial de préstamos. El libro desaparece del catálogo activo pero sus registros en `loans` se conservan para auditoría. |
 
 ---
 

@@ -189,10 +189,10 @@ Desarrollar un **Producto Mínimo Viable (MVP)** de un sistema de gestión bibli
     *Dado que* el bibliotecario ingresa el ID de un libro existente y suministra los nuevos valores,  
     *Cuando* confirma la actualización,  
     *Entonces* el sistema guarda los cambios y muestra `"Libro actualizado correctamente"`.
-  - **CA-2 (Baja Válida de Ejemplar):**  
-    *Dado que* el libro a eliminar cuenta con estado `"Disponible"`,  
-    *Cuando* el bibliotecario confirma la eliminación,  
-    *Entonces* el libro es retirado de la lista en memoria y se notifica la baja exitosa.
+  - **CA-2 (Baja Logica de Ejemplar):**  
+    *Dado que* el libro a dar de baja cuenta con estado "Disponible" (is_available == true y sin prestamos activos),  
+    *Cuando* el bibliotecario confirma la baja del ejemplar,  
+    *Entonces* el libro se marca internamente como inactivo (is_deleted = true), desaparece del catalogo activo y se muestra "Libro dado de baja del catalogo exitosamente". El historial de prestamos del ejemplar se conserva para auditoria.
   - **CA-3 (Bloqueo de Eliminación por Préstamo Activo - RN-05):**  
     *Dado que* el libro que se pretende eliminar se encuentra en calidad de `"No disponible"` (prestado en curso),  
     *Cuando* se intenta ejecutar la eliminación,  
