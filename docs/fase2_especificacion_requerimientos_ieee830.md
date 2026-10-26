@@ -59,6 +59,7 @@ El software es un sistema autónomo, modular y desacoplado, diseñado para ejecu
 - **RS-02 (Interfaz Operativa):** Ejecución confinada a la **consola de comandos (CLI)** estructurada en menús numéricos interactivos.
 - **RS-03 (Concurrencia):** Operación monousuario secuencial; el sistema asume un único operador en la estación de trabajo.
 - **RS-04 (Correspondencia Unívoca de Inventario):** Para el alcance del MVP, se establece una relación unívoca 1:1 entre el registro bibliográfico catalogado (`Libro`/`ISBN`) y el ejemplar físico en anaquel. Cada registro representa un único ejemplar físico en existencia. La administración de múltiples volúmenes o copias físicas asociadas a un mismo ISBN se delega a iteraciones posteriores (HU-13).
+- **RS-05 (Catálogo Maestro de Categorías):** Las categorías temáticas (Novela, Ficción, Ensayo, Poesía, Ciencia, Tecnología, Historia) forman parte de un catálogo clasificador predeterminado en el sistema. En el MVP se gestionan como atributo de clasificación textual o catálogo maestro pre-sembrado en base de datos, sin requerir una interfaz CRUD transaccional independiente para mantener el foco en el flujo operativo esencial del bibliotecario.
 
 ---
 
@@ -148,8 +149,10 @@ El software es un sistema autónomo, modular y desacoplado, diseñado para ejecu
   6. El sistema cambia el estado del libro a `disponible = false`.
   7. El sistema instancia el objeto de préstamo con estado `"Activo"`, lo agrega a la lista de préstamos y muestra `"Préstamo registrado exitosamente"`.
 - **Flujos de Excepción:**
-  - *Usuario Inhabilitado:* Si el usuario tiene `activo == false`, el sistema bloquea el préstamo con `"Usuario no habilitado para préstamos"`.
-  - *Libro Prestado:* Si el libro ya está prestado, emite `"El libro seleccionado no cuenta con existencias disponibles para préstamo"`. A nivel de base de datos relacional, esta regla está blindada por la restricción de unicidad física `uk_loans_active_book` que impide registrar más de un préstamo activo del mismo libro simultáneamente.
+  - *Usuario No Registrado:* Si el documento de identidad ingresado no coincide con ningún usuario registrado, el sistema cancela el préstamo con `"Usuario no registrado en el sistema"`.
+  - *Usuario Inhabilitado:* Si el usuario existe pero tiene `activo == false`, el sistema bloquea el préstamo con `"Usuario no habilitado para préstamos. Estado actual: INACTIVO"`.
+  - *Libro No Encontrado:* Si el ID ingresado no corresponde a ningún libro del catálogo o ha sido dado de baja lógica (`is_deleted == true`), el sistema emite `"Libro no encontrado en el catálogo activo"`.
+  - *Libro Prestado:* Si el libro ya está prestado (`disponible == false`), emite `"El libro seleccionado no cuenta con existencias disponibles para préstamo"`. A nivel de base de datos relacional, esta regla está blindada por la restricción de unicidad física `uk_loans_active_book` que impide registrar más de un préstamo activo del mismo libro simultáneamente.
 
 ---
 
