@@ -53,7 +53,7 @@ Gestion-de-biblioteca-virtual-/
 ├── docs/
 │   ├── fase1_historias_usuario.md                    <-- Fase 1: Épicas, Historias (HU-01 a HU-13), Gherkin y MoSCoW
 │   ├── fase2_especificacion_requerimientos_ieee830.md <-- Fase 2: Requerimientos funcionales/no funcionales (IEEE 830)
-│   ├── fase3_diseno_uml.md                           <-- Fase 3: Casos de uso, Clases, Secuencia y Actividades (Mermaid)
+│   ├── fase3_diseño_uml.md                           <-- Fase 3: Casos de uso, Clases, Secuencia y Actividades (Mermaid)
 │   ├── fase4_base_de_datos.md                        <-- Fase 4: Modelo relacional 3FN, Diagrama ER Mermaid y Diccionario
 │   ├── fase5_mockup_prototipo.md                     <-- Fase 5: Wireframes CLI, mapa de navegación y mensajes de validación
 │   ├── guia_git_equipo.md                            <-- Guía de colaboración Git y comandos para los aprendices
