@@ -79,6 +79,7 @@ Gestion-de-biblioteca-virtual-/
 - 🖥️ [**Fase 5: Mockup, Prototipo CLI y Navegación**](docs/fase5_mockup_prototipo.md)
 - 🗄️ [**Script SQL Ejecutable (database/schema.sql)**](database/schema.sql)
 - 🛠️ [**Guía de Trabajo Colaborativo en Git**](docs/guia_git_equipo.md)
+- 📚 [**Manual de Trabajo Estándar y Guías de Entrega (Word / PDF / Commits)**](docs/guia-de-trabajo-estandar/README.md)
 
 ---
 
