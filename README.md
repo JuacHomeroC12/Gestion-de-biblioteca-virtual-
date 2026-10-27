@@ -83,103 +83,20 @@ Gestion-de-biblioteca-virtual-/
 
 ---
 
-## ⚖️ Reglas de Trabajo, Control de Versiones y Gobierno en Git
+## 🛠️ Normas de Trabajo, Guías y Gobierno del Proyecto
 
-Para asegurar el rigor metodológico exigido por el SENA, evitar conflictos de fusión y garantizar que tanto el instructor como las herramientas de auditoría automática puedan evaluar el repositorio sin ambigüedades, se establecen las siguientes **reglas obligatorias**:
+Para mantener el rigor metodológico exigido por el SENA, evitar conflictos y facilitar el trabajo colaborativo de todos los aprendices, todos los estándares operativos, guías de maquetación en Word/PDF, convención de commits y políticas de Git se encuentran centralizados y detallados en:
 
-```mermaid
-flowchart TD
-    subgraph Local["1. Entorno de Desarrollo Local"]
-        DevLocal["Aprendiz trabaja en local<br>(docs/ o database/)"]
-        CommitLocal["git commit -m 'tipo(alcance): descripcion'<br>(Firma individual con correo institucional)"]
-        DevLocal --> CommitLocal
-    end
+👉 **[Manual de Trabajo Estándar y Reglas de Desarrollo (docs/guia-de-trabajo-estandar/)](docs/guia-de-trabajo-estandar/README.md)**
 
-    subgraph RemotoDev["2. Integración Continua (GitHub)"]
-        PushDev["git push origin develop"]
-        RamaDev[("Rama: develop<br>🎯 OBJETO DE EVALUACIÓN")]
-        CommitLocal --> PushDev --> RamaDev
-    end
-
-    subgraph Evaluacion["3. Aduana de Calificación"]
-        PR["Pull Request Abierto:<br>develop ➔ main"]
-        Auditoria["Auditoría del Instructor Carlos Julio<br>+ Agente Evaluador de IA"]
-        RamaDev --> PR --> Auditoria
-    end
-
-    subgraph Produccion["4. Entrega Definitiva"]
-        MergePR["Merge Pull Request<br>(Solo tras aprobación)"]
-        RamaMain[("Rama: main<br>✅ ENTREGAS YA CALIFICADAS")]
-        Auditoria -- "Visto Bueno / Calificado" --> MergePR --> RamaMain
-    end
-```
-
-### 1. Política Estricta de Ramas
-* **`main` (Rama de Producción / Entregas Calificadas):**
-  - **Prohibición absoluta:** Ningún miembro del equipo puede hacer `git push` directo o commits manuales sobre `main`.
-  - Contiene exclusivamente versiones que ya han sido revisadas, sustentadas y calificadas por el instructor técnico.
-* **`develop` (Rama de Desarrollo Activo y Calificación):**
-  - Es la rama central de trabajo colaborativo donde se integran los avances de las fases y código.
-  - **Es la rama que el instructor Carlos Julio y el agente de IA evalúan.**
-* **Ramas de Características (`feature/*` o `docs/*`):**
-  - Ramas auxiliares utilizadas por los aprendices para desarrollar módulos específicos antes de integrarlos a `develop`.
-
-### 2. Estándar de Commits Semánticos (Conventional Commits)
-Todo commit en el repositorio debe seguir la convención internacional `tipo(alcance): descripción concisa`. A continuación se detallan los tipos con **ejemplos reales listos para usar en el proyecto**:
-
-- `docs(...)`: Actualizaciones o mejoras en la documentación técnica, guías o exportaciones a PDF.
-  - *Ejemplo real:* `docs(pdf): exportar fase 4 base de datos a formato pdf estandar sena`
-  - *Ejemplo real:* `docs(fase1): estructurar historias de usuario y matriz moscow`
-  - *Ejemplo real:* `docs(readme): vincular guia de trabajo estandar para juaco y melo`
-- `feat(...)`: Implementación de nuevas características funcionales, vistas, código o scripts ejecutables.
-  - *Ejemplo real:* `feat(fase4-sql): implementar DDL 3FN con politica de baja logica is_deleted`
-  - *Ejemplo real:* `feat(loans): agregar validacion de usuario activo antes de registrar prestamo`
-  - *Ejemplo real:* `feat(ui): diseñar pantalla de consulta de catalogo y disponibilidad de libros`
-- `fix(...)`: Corrección de errores, inconsistencias técnicas, bugs o restricciones de base de datos.
-  - *Ejemplo real:* `fix(schema): corregir restriccion check en anio de publicacion entre 1000 y 2100`
-  - *Ejemplo real:* `fix(loans): corregir actualizacion de estado del libro al procesar devolucion`
-- `refactor(...)`: Reestructuración o limpieza de modelos, diagramas o código sin cambiar su comportamiento.
-  - *Ejemplo real:* `refactor(db): optimizar columna virtual active_book_id para blindar unicidad`
-  - *Ejemplo real:* `refactor(docs): estandarizar titulos y numeracion decimal segun normas sena`
-- `test(...)`: Incorporación o ajuste de pruebas unitarias, suites o consultas SQL de verificación.
-  - *Ejemplo real:* `test(db): agregar 4 suites de pruebas de verificacion de integridad relacional`
-  - *Ejemplo real:* `test(loans): probar restriccion de unicidad ante intento de doble prestamo`
-- `chore(...)`: Tareas de mantenimiento general, configuración, dependencias o archivo `.gitignore`.
-  - *Ejemplo real:* `chore(git): agregar reglas en gitignore para ignorar archivos temporales de word`
-  - *Ejemplo real:* `chore(docker): preparar archivo docker-compose para desplegar mysql localmente`
-
-#### 💡 Tabla Rápida de Referencia (Ejemplos Reales Listos para Copiar)
-
-| Tipo | Alcance Típico | Comando de Ejemplo Real para Terminal |
-|---|---|---|
-| **`docs`** | `pdf`, `fase1` a `fase5`, `guias` | `git commit -m "docs(pdf): subir documento formal de fase 4 con portada sena e indice"` |
-| **`feat`** | `sql`, `catalogo`, `usuarios`, `prestamos` | `git commit -m "feat(prestamos): implementar registro con verificacion de ejemplar activo"` |
-| **`fix`** | `schema`, `validacion`, `rutas` | `git commit -m "fix(schema): corregir clave foranea user_id con on delete restrict"` |
-| **`refactor`** | `modelo`, `diagramas`, `estilos` | `git commit -m "refactor(uml): simplificar diagrama de clases y actualizar relaciones"` |
-| **`test`** | `db`, `servicios`, `pruebas` | `git commit -m "test(db): verificar que el motor mysql bloquee el prestamo de un libro ocupado"` |
-| **`chore`** | `git`, `deps`, `entorno` | `git commit -m "chore(gitignore): omitir archivos temporales generados por microsoft word"` |
-
-> 🚫 **Prohibición Estricta:** Quedan terminantemente prohibidos commits con mensajes genéricos o informales como *"cambios"*, *"subiendo avances"*, *"commit 1"* o *"actualización"*. Cada commit debe explicar con claridad qué se modificó y por qué.  
-> 📖 Para consultar la guía completa con más casos de uso y solución de errores, revisa el [**Manual de Conventional Commits**](docs/guia-de-trabajo-estandar/01_guia_commits_y_git/estandar_conventional_commits.md).
-
-### 3. Trazabilidad y Autoría Individual Verificable
-- Cada integrante del equipo debe tener configurada su identidad local en Git (`git config user.name` y `git config user.email`) utilizando su nombre real y su correo institucional SENA (`@misena.edu.co`).
-- De esta forma, la gráfica de **Insights / Contributors** de GitHub reflejará fielmente el aporte individual y la dedicación equitativa de cada aprendiz para la evaluación formativa.
-
-### 4. Protocolo Obligatorio de Entrega mediante Pull Request (PR)
-1. Los aprendices finalizan los cambios en la rama `develop` y ejecutan `git push origin develop`.
-2. Se abre un **Pull Request** en GitHub con la configuración:
-   $$\text{Base: } \mathbf{main} \quad \longleftarrow \quad \text{Compare: } \mathbf{develop}$$
-3. El Pull Request documenta el resumen técnico de las historias, requisitos o esquemas desarrollados.
-4. **El PR se mantiene ABIERTO** para que el instructor Carlos Julio (manualmente o con asistencia de IA) audite las diferencias en la pestaña *Files Changed*.
-5. **Fusión (*Merge*):** Solo se hace clic en **Merge Pull Request** una vez que el instructor emite la retroalimentación y aprueba la entrega.
-
-### 5. Regla de Sincronización Previa (`git pull`)
-Para evitar conflictos de fusión (*merge conflicts*), cada desarrollador debe ejecutar obligatoriamente antes de iniciar su jornada de trabajo:
-```powershell
-git checkout develop
-git pull origin develop
-```
+### 📌 Accesos Directos a las Guías y Reglas:
+- 🌿 [**Gobierno en Git, Flujo de Ramas y Evaluación Docente**](docs/guia-de-trabajo-estandar/01_guia_commits_y_git/gobierno_git_y_evaluacion.md)
+- 🚀 [**Guía Paso a Paso de Git para Juaco y Melo**](docs/guia-de-trabajo-estandar/01_guia_commits_y_git/README.md)
+- ✍️ [**Estándar de Conventional Commits con Ejemplos Reales**](docs/guia-de-trabajo-estandar/01_guia_commits_y_git/estandar_conventional_commits.md)
+- 📄 [**Estándar Visual de Formato Word y PDF (Arial 11, 1.5, Márgenes)**](docs/guia-de-trabajo-estandar/02_guia_desarrollo_word_y_pdf/README.md)
+- 🏛️ [**Plantilla Oficial de Portada SENA para Copiar a Word**](docs/guia-de-trabajo-estandar/03_plantillas_y_recursos/portada_oficial_sena.md)
+- 🤖 [**Prompts de Apoyo para Inteligencia Artificial (ChatGPT/Claude/Gemini)**](docs/guia-de-trabajo-estandar/03_plantillas_y_recursos/prompts_de_apoyo_para_ia.md)
+- 👥 [**Distribución de Fases y Metas de Co-Autoría Git (25% - 30%)**](docs/guia-de-trabajo-estandar/04_matriz_fases_y_responsables/distribucion_de_fases.md)
 
 ---
 *Centro de la Industria, la Empresa y los Servicios (CIES) — Regional Huila*
