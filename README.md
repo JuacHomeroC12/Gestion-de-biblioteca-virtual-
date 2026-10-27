@@ -125,15 +125,42 @@ flowchart TD
   - Ramas auxiliares utilizadas por los aprendices para desarrollar módulos específicos antes de integrarlos a `develop`.
 
 ### 2. Estándar de Commits Semánticos (Conventional Commits)
-Todo commit en el repositorio debe seguir la convención internacional `tipo(alcance): descripción concisa`:
-- `docs(...)`: Actualizaciones o mejoras en la documentación técnica (`fase1`, `fase2`, `fase3`, `fase4`, `fase5`, `readme`).
-- `feat(...)`: Implementación de nuevas características funcionales o scripts ejecutables (e.g., `feat(fase4-sql): implementar DDL 3FN`).
-- `fix(...)`: Corrección de errores, inconsistencias técnicas o restricciones de base de datos.
-- `refactor(...)`: Reestructuración de modelos, diagramas o código sin cambiar su comportamiento.
-- `test(...)`: Incorporación o ajuste de pruebas y casos de verificación.
-- `chore(...)`: Tareas de mantenimiento general, `.gitignore` o configuración del proyecto.
+Todo commit en el repositorio debe seguir la convención internacional `tipo(alcance): descripción concisa`. A continuación se detallan los tipos con **ejemplos reales listos para usar en el proyecto**:
 
-> **Prohibición:** Quedan terminantemente prohibidos commits con mensajes genéricos o informales como *"cambios"*, *"subiendo avances"* o *"actualización"*. Cada commit debe explicar con claridad qué se modificó y por qué.
+- `docs(...)`: Actualizaciones o mejoras en la documentación técnica, guías o exportaciones a PDF.
+  - *Ejemplo real:* `docs(pdf): exportar fase 4 base de datos a formato pdf estandar sena`
+  - *Ejemplo real:* `docs(fase1): estructurar historias de usuario y matriz moscow`
+  - *Ejemplo real:* `docs(readme): vincular guia de trabajo estandar para juaco y melo`
+- `feat(...)`: Implementación de nuevas características funcionales, vistas, código o scripts ejecutables.
+  - *Ejemplo real:* `feat(fase4-sql): implementar DDL 3FN con politica de baja logica is_deleted`
+  - *Ejemplo real:* `feat(loans): agregar validacion de usuario activo antes de registrar prestamo`
+  - *Ejemplo real:* `feat(ui): diseñar pantalla de consulta de catalogo y disponibilidad de libros`
+- `fix(...)`: Corrección de errores, inconsistencias técnicas, bugs o restricciones de base de datos.
+  - *Ejemplo real:* `fix(schema): corregir restriccion check en anio de publicacion entre 1000 y 2100`
+  - *Ejemplo real:* `fix(loans): corregir actualizacion de estado del libro al procesar devolucion`
+- `refactor(...)`: Reestructuración o limpieza de modelos, diagramas o código sin cambiar su comportamiento.
+  - *Ejemplo real:* `refactor(db): optimizar columna virtual active_book_id para blindar unicidad`
+  - *Ejemplo real:* `refactor(docs): estandarizar titulos y numeracion decimal segun normas sena`
+- `test(...)`: Incorporación o ajuste de pruebas unitarias, suites o consultas SQL de verificación.
+  - *Ejemplo real:* `test(db): agregar 4 suites de pruebas de verificacion de integridad relacional`
+  - *Ejemplo real:* `test(loans): probar restriccion de unicidad ante intento de doble prestamo`
+- `chore(...)`: Tareas de mantenimiento general, configuración, dependencias o archivo `.gitignore`.
+  - *Ejemplo real:* `chore(git): agregar reglas en gitignore para ignorar archivos temporales de word`
+  - *Ejemplo real:* `chore(docker): preparar archivo docker-compose para desplegar mysql localmente`
+
+#### 💡 Tabla Rápida de Referencia (Ejemplos Reales Listos para Copiar)
+
+| Tipo | Alcance Típico | Comando de Ejemplo Real para Terminal |
+|---|---|---|
+| **`docs`** | `pdf`, `fase1` a `fase5`, `guias` | `git commit -m "docs(pdf): subir documento formal de fase 4 con portada sena e indice"` |
+| **`feat`** | `sql`, `catalogo`, `usuarios`, `prestamos` | `git commit -m "feat(prestamos): implementar registro con verificacion de ejemplar activo"` |
+| **`fix`** | `schema`, `validacion`, `rutas` | `git commit -m "fix(schema): corregir clave foranea user_id con on delete restrict"` |
+| **`refactor`** | `modelo`, `diagramas`, `estilos` | `git commit -m "refactor(uml): simplificar diagrama de clases y actualizar relaciones"` |
+| **`test`** | `db`, `servicios`, `pruebas` | `git commit -m "test(db): verificar que el motor mysql bloquee el prestamo de un libro ocupado"` |
+| **`chore`** | `git`, `deps`, `entorno` | `git commit -m "chore(gitignore): omitir archivos temporales generados por microsoft word"` |
+
+> 🚫 **Prohibición Estricta:** Quedan terminantemente prohibidos commits con mensajes genéricos o informales como *"cambios"*, *"subiendo avances"*, *"commit 1"* o *"actualización"*. Cada commit debe explicar con claridad qué se modificó y por qué.  
+> 📖 Para consultar la guía completa con más casos de uso y solución de errores, revisa el [**Manual de Conventional Commits**](docs/guia-de-trabajo-estandar/01_guia_commits_y_git/estandar_conventional_commits.md).
 
 ### 3. Trazabilidad y Autoría Individual Verificable
 - Cada integrante del equipo debe tener configurada su identidad local en Git (`git config user.name` y `git config user.email`) utilizando su nombre real y su correo institucional SENA (`@misena.edu.co`).
