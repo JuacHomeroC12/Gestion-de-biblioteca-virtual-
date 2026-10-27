@@ -79,7 +79,7 @@ Gestion-de-biblioteca-virtual-/
 
 Para garantizar la calidad del repositorio y cumplir con las buenas prácticas de la industria y la evaluación formativa:
 1. **Rama `main`:** Rama protegida destinada a entregas estables calificadas. **Prohibido realizar commits directos.**
-2. **Rama `develop`:** Rama activa de desarrollo y consolidación documental.
+2. **Rama `develop`:** Rama activa de desarrollo, consolidación documental y y calificacion del instructor para.**
 3. **Commits Semánticos:** Cada aporte debe seguir la convención Conventional Commits (`docs:`, `fix:`, `feat:`).
 4. **Trazabilidad de Integrantes:** Cada aprendiz realiza commits firmados con su usuario local para reflejar el trabajo individual en la red de contribuciones de GitHub.
 
