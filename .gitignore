@@ -22,5 +22,8 @@ bin/
 Thumbs.db
 .DS_Store
 
-# Logs
+# Logs y Variables de Entorno Locales
 *.log
+.env
+!.env.example
+
