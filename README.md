@@ -52,6 +52,8 @@ La documentación técnica se encuentra completamente modularizada en formato Ma
 Gestion-de-biblioteca-virtual-/
 │
 ├── README.md                                          <-- Portal principal del proyecto y reglas de gobierno
+├── docker-compose.yml                                 <-- Contenedor MySQL 8.0 con carga automática de schema.sql
+├── .env.example                                       <-- Plantilla de variables de entorno para Docker Compose
 ├── .gitignore                                         <-- Filtro de archivos no rastreables
 │
 ├── database/
@@ -65,10 +67,11 @@ Gestion-de-biblioteca-virtual-/
 │   ├── fase5_mockup_prototipo.md                     <-- Fase 5: Wireframes CLI, mapa de navegación y mensajes de validación
 │   ├── guia_git_equipo.md                            <-- Guía de colaboración Git y comandos para los aprendices
 │   │
-│   └── pdf/                                          <-- Respaldo histórico de entregas iniciales
+│   └── pdf/                                          <-- Entregables formales compilados en PDF (Estándar SENA)
 │       ├── Fase1_Historias_Usuario.pdf
 │       ├── Fase2_Requerimientos_Sistema_Biblioteca_Digital.pdf
-│       └── Fase3_Sistema_Biblioteca_Digital.pdf
+│       ├── Fase3_Sistema_Biblioteca_Digital.pdf
+│       └── Fase4_Base_de_Datos_Sistema_Biblioteca_Digital.pdf
 ```
 
 ### 🔗 Enlaces Rápidos a la Documentación
