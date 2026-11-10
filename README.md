@@ -67,11 +67,10 @@ Gestion-de-biblioteca-virtual-/
 │   ├── fase5_mockup_prototipo.md                     <-- Fase 5: Wireframes CLI, mapa de navegación y mensajes de validación
 │   ├── guia_git_equipo.md                            <-- Guía de colaboración Git y comandos para los aprendices
 │   │
-│   └── pdf/                                          <-- Entregables formales compilados en PDF (Estándar SENA)
+│   └── pdf/                                          <-- Respaldo histórico de entregas iniciales
 │       ├── Fase1_Historias_Usuario.pdf
 │       ├── Fase2_Requerimientos_Sistema_Biblioteca_Digital.pdf
-│       ├── Fase3_Sistema_Biblioteca_Digital.pdf
-│       └── Fase4_Base_de_Datos_Sistema_Biblioteca_Digital.pdf
+│       └── Fase3_Sistema_Biblioteca_Digital.pdf
 ```
 
 ### 🔗 Enlaces Rápidos a la Documentación
