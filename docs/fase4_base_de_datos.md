@@ -310,3 +310,30 @@ mysql -u root -p < database/schema.sql
 3. Cargar el contenido de `database/schema.sql` y presionar **Execute (Ctrl + Shift + Enter)**.
 4. El script creará la base de datos `digital_library`, sus 5 tablas, índices y datos semilla de prueba.
 
+
+
+---
+
+## 8. Consultas de Verificación: Búsquedas Parciales con Cláusula `LIKE` (RF-07 / HU-07)
+
+En cumplimiento de la auditoría técnica y los requerimientos funcionales **RF-07** (Búsqueda de Libros por coincidencias parciales) y **RF-03/RF-05** (Filtro asistido de lectores para emisión de préstamos), el motor de base de datos incorpora y valida las siguientes sentencias optimizadas con la cláusula `LIKE`:
+
+### 8.1. Búsqueda Parcial en Catálogo de Libros Activos:
+Permite ubicar obras sin requerir la coincidencia exacta del título ni memorizar el código numérico interno:
+```sql
+SELECT b.id, b.title, b.isbn, a.name AS author_name, c.name AS category_name, b.is_available
+FROM books b
+JOIN authors a ON b.author_id = a.id
+JOIN categories c ON b.category_id = c.id
+WHERE (b.title LIKE '%Cien%' OR b.isbn LIKE '%0307%')
+  AND b.is_deleted = FALSE;
+```
+
+### 8.2. Filtro Predictivo de Lectores Habilitados:
+Permite filtrar dinámicamente lectores en el flujo de préstamos mediante su documento parcial o fragmento de nombre:
+```sql
+SELECT id, document_number, full_name, phone
+FROM users
+WHERE is_active = TRUE
+  AND (full_name LIKE '%David%' OR document_number LIKE '%1075%');
+```

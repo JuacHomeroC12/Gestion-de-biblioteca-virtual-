@@ -220,3 +220,22 @@ WHERE l.book_id = 2;
 -- VALUES (1, 2, '2026-10-26', '2026-11-05', 'ACTIVE');
 -- Resultado esperado: ERROR 1062 (23000): Duplicate entry '1' for key 'uk_loans_active_book'
 
+
+
+-- =============================================================================
+-- CONSULTAS DE VERIFICACION: BUSQUEDAS PARCIALES CON LIKE (RF-07 / HU-07)
+-- =============================================================================
+
+-- Consulta 5: Busqueda parcial de libros activos por coincidencia en titulo o ISBN (RF-07)
+SELECT b.id, b.title, b.isbn, a.name AS author_name, c.name AS category_name, b.is_available
+FROM books b
+JOIN authors a ON b.author_id = a.id
+JOIN categories c ON b.category_id = c.id
+WHERE (b.title LIKE '%Cien%' OR b.isbn LIKE '%0307%')
+  AND b.is_deleted = FALSE;
+
+-- Consulta 6: Filtro predictivo de lectores habilitados por coincidencia en nombre o documento (RF-03/RF-05)
+SELECT id, document_number, full_name, phone
+FROM users
+WHERE is_active = TRUE
+  AND (full_name LIKE '%David%' OR document_number LIKE '%1075%');

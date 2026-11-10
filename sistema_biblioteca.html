@@ -691,9 +691,165 @@
       from { transform: translateX(100%); opacity: 0; }
       to { transform: translateX(0); opacity: 1; }
     }
+
+    /* ============================================================ */
+    /* RESPONSIVE & MOBILE DESIGN (Obs 10 & Obs 11)                 */
+    /* ============================================================ */
+    .mobile-nav-toggle {
+      display: none;
+      background: none;
+      border: 1px solid var(--border);
+      color: var(--text);
+      font-size: 1.4rem;
+      padding: 0.35rem 0.65rem;
+      border-radius: var(--radius-sm);
+      cursor: pointer;
+      align-items: center;
+      justify-content: center;
+      line-height: 1;
+    }
+
+    .sidebar-overlay {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: rgba(28, 19, 13, 0.6);
+      backdrop-filter: blur(2px);
+      z-index: 900;
+    }
+
+    @media (max-width: 1024px) {
+      .stats-grid {
+        grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+      }
+    }
+
+    @media (max-width: 768px) {
+      body {
+        overflow-y: auto;
+        height: auto;
+        min-height: 100vh;
+      }
+
+      .mobile-nav-toggle {
+        display: inline-flex;
+      }
+
+      aside {
+        position: fixed;
+        left: -290px;
+        top: 0;
+        bottom: 0;
+        z-index: 1000;
+        transition: left 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        box-shadow: 4px 0 20px rgba(0, 0, 0, 0.4);
+      }
+
+      aside.sidebar-mobile-open {
+        left: 0;
+      }
+
+      .sidebar-overlay.active {
+        display: block;
+      }
+
+      .main-wrapper {
+        width: 100%;
+        min-width: 0;
+      }
+
+      .topbar {
+        padding: 0.85rem 1rem;
+      }
+
+      .topbar-actions {
+        gap: 0.5rem;
+      }
+
+      .topbar-actions .btn {
+        padding: 0.45rem 0.75rem;
+        font-size: 0.82rem;
+      }
+
+      .content-area {
+        padding: 1rem;
+        overflow-y: visible;
+      }
+
+      .toolbar {
+        flex-direction: column;
+        align-items: stretch;
+      }
+
+      .search-input-group, .select-input {
+        width: 100%;
+        min-width: 100%;
+      }
+
+      .card-header {
+        flex-direction: column;
+        align-items: stretch;
+        gap: 0.75rem;
+      }
+
+      /* PATRON TABLE-TO-CARDS EN MOVILES (Obs 11) */
+      .table-container table thead {
+        display: none;
+      }
+
+      .table-container table, 
+      .table-container tbody, 
+      .table-container tr, 
+      .table-container td {
+        display: block;
+        width: 100%;
+      }
+
+      .table-container tr {
+        background: var(--surface);
+        border: 1px solid var(--border);
+        border-radius: var(--radius-md);
+        margin-bottom: 1rem;
+        padding: 1rem;
+        box-shadow: var(--shadow-sm);
+      }
+
+      .table-container td {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 0.5rem 0;
+        border-bottom: 1px dashed var(--border);
+        text-align: right;
+      }
+
+      .table-container td:last-child {
+        border-bottom: none;
+        padding-top: 0.75rem;
+        justify-content: flex-end;
+      }
+
+      .table-container td::before {
+        content: attr(data-label);
+        font-weight: 700;
+        font-size: 0.78rem;
+        color: var(--text-muted);
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+        text-align: left;
+        margin-right: 1rem;
+        flex-shrink: 0;
+      }
+
+      .action-group {
+        width: 100%;
+        justify-content: flex-end;
+      }
+    }
   </style>
 </head>
 <body>
+  <div class="sidebar-overlay" id="sidebarOverlay" onclick="toggleSidebar()"></div>
 
   <!-- BARRA LATERAL (MADERA NOBLE Y ESTANTES) -->
   <aside>
@@ -738,6 +894,12 @@
       <div class="nav-item" onclick="switchView('users')">
         <svg fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"/></svg>
         <span>Lectores (users)</span>
+      </div>
+
+      <div class="nav-label">Mantenimiento</div>
+      <div class="nav-item" onclick="switchView('backup')">
+        <svg fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12"/></svg>
+        <span>Copia de Seguridad</span>
       </div>
     </div>
 
@@ -805,6 +967,22 @@
             <div class="stat-icon-wrapper stat-warm-wood">👥</div>
           </div>
         </div>
+          <div class="stat-card" style="border-left: 4px solid var(--danger);">
+            <div class="stat-info">
+              <span>Préstamos Vencidos</span>
+              <div class="stat-number" id="kpiOverdue" style="color:var(--danger);">0</div>
+            </div>
+            <div class="stat-icon-wrapper" style="background:var(--danger-bg); border-color:#fecaca;">⚠️</div>
+          </div>
+        </div>
+
+        <!-- Alerta Proactiva de Vencimientos y Préstamos en Riesgo (Obs 12) -->
+        <div id="proactiveAlertBanner" style="display:none; margin-bottom:1.5rem; padding:1rem 1.25rem; border-radius:var(--radius-md); background:var(--warning-bg); border:1px solid #fde68a; color:var(--text); box-shadow:var(--shadow-sm);">
+          <div style="display:flex; align-items:center; gap:0.75rem;">
+            <span style="font-size:1.4rem;">⚠️</span>
+            <div id="proactiveAlertText" style="font-size:0.9rem; line-height:1.4;"></div>
+          </div>
+        </div>
 
         <!-- Préstamos Activos Recientes -->
         <div class="card">
@@ -869,7 +1047,7 @@
             <div class="toolbar">
               <div class="search-input-group">
                 <svg fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/></svg>
-                <input type="text" id="bookSearch" placeholder="Buscar por título, autor o ISBN (HU-07)..." oninput="renderBooksTable()">
+                <input type="text" id="bookSearch" placeholder="Buscar por título, autor o ISBN..." oninput="renderBooksTable()">
               </div>
               <select class="select-input" id="bookCategoryFilter" onchange="renderBooksTable()">
                 <option value="ALL">Todas las Categorías</option>
@@ -881,7 +1059,7 @@
                 <option value="DELETED">Baja Lógica (is_deleted=1)</option>
               </select>
             </div>
-            <button class="btn btn-primary" onclick="openModal('bookModal')">+ Registrar Libro (HU-01)</button>
+            <button class="btn btn-primary" onclick="openModal('bookModal')">+ Registrar Libro</button>
           </div>
 
           <div class="table-container">
@@ -889,13 +1067,13 @@
               <thead>
                 <tr>
                   <th>ID</th>
-                  <th>ISBN (RN-01)</th>
+                  <th>ISBN</th>
                   <th>Título de la Obra</th>
                   <th>Autor (authors.name)</th>
                   <th>Categoría (categories.name)</th>
                   <th>Año</th>
                   <th>Disponibilidad</th>
-                  <th style="text-align:right;">Acciones (HU-08)</th>
+                  <th style="text-align:right;">Acciones</th>
                 </tr>
               </thead>
               <tbody id="booksTbody"></tbody>
@@ -922,7 +1100,7 @@
                 <option value="ALL">Todos los Registros</option>
               </select>
             </div>
-            <button class="btn btn-primary" onclick="openModal('loanModal')">📤 Prestar Libro (HU-05)</button>
+            <button class="btn btn-primary" onclick="openModal('loanModal')">📤 Prestar Libro</button>
           </div>
 
           <div class="table-container">
@@ -936,7 +1114,7 @@
                   <th>Fecha Límite Pactada</th>
                   <th>Fecha Reintegro</th>
                   <th>Estado</th>
-                  <th style="text-align:right;">Acciones (HU-06)</th>
+                  <th style="text-align:right;">Acciones</th>
                 </tr>
               </thead>
               <tbody id="loansTbody"></tbody>
@@ -957,18 +1135,18 @@
                 <input type="text" id="userSearch" placeholder="Buscar por nombre o documento..." oninput="renderUsersTable()">
               </div>
             </div>
-            <button class="btn btn-primary" onclick="openModal('userModal')">+ Registrar Usuario (HU-03)</button>
+            <button class="btn btn-primary" onclick="openModal('userModal')">+ Registrar Usuario</button>
           </div>
 
           <div class="table-container">
             <table>
               <thead>
                 <tr>
-                  <th>Documento (RN-03)</th>
+                  <th>Documento</th>
                   <th>Nombre Completo (full_name)</th>
                   <th>Teléfono (phone)</th>
                   <th>Préstamos Vigentes</th>
-                  <th>Estado (RN-04)</th>
+                  <th>Estado</th>
                   <th style="text-align:right;">Acciones</th>
                 </tr>
               </thead>
@@ -990,14 +1168,14 @@
                 <input type="text" id="authorSearch" placeholder="Buscar autor o código..." oninput="renderAuthorsTable()">
               </div>
             </div>
-            <button class="btn btn-primary" onclick="openModal('authorModal')">+ Registrar Autor (HU-02)</button>
+            <button class="btn btn-primary" onclick="openModal('authorModal')">+ Registrar Autor</button>
           </div>
 
           <div class="table-container">
             <table>
               <thead>
                 <tr>
-                  <th>Código ISNI / ORCID (RN-02)</th>
+                  <th>Código ISNI / ORCID</th>
                   <th>Nombre del Autor (name)</th>
                   <th>Nacionalidad (nationality)</th>
                   <th>Obras en Catálogo</th>
@@ -1048,12 +1226,18 @@
       </div>
       <div class="modal-content">
         <div class="form-group">
-          <label>Lector Solicitante (Solo Usuarios Activos - RN-04) *</label>
-          <select id="modalLoanUser" class="form-control"></select>
+          <label>Lector Solicitante (Búsqueda asistida por nombre o documento) *</label>
+          <input type="text" id="modalLoanUserInput" list="modalLoanUserList" class="form-control" placeholder="Escribe para buscar lector habilitado..." required oninput="onLoanUserInput()">
+          <datalist id="modalLoanUserList"></datalist>
+          <input type="hidden" id="modalLoanUserId">
+          <small id="modalLoanUserHelp" style="font-size:0.75rem; color:var(--text-muted); margin-top:3px; display:block;"></small>
         </div>
         <div class="form-group">
-          <label>Libro a Prestar (Solo Ejemplares Disponibles - RN-05) *</label>
-          <select id="modalLoanBook" class="form-control"></select>
+          <label>Libro a Prestar (Búsqueda asistida por título, autor o ISBN) *</label>
+          <input type="text" id="modalLoanBookInput" list="modalLoanBookList" class="form-control" placeholder="Escribe para buscar ejemplar disponible..." required oninput="onLoanBookInput()">
+          <datalist id="modalLoanBookList"></datalist>
+          <input type="hidden" id="modalLoanBookId">
+          <small id="modalLoanBookHelp" style="font-size:0.75rem; color:var(--text-muted); margin-top:3px; display:block;"></small>
         </div>
         <div class="form-grid-2">
           <div class="form-group">
@@ -1096,12 +1280,12 @@
         <input type="hidden" id="modalEditBookId">
         <div class="form-group">
           <label>Título de la Obra (title) *</label>
-          <input type="text" id="modalBookTitle" class="form-control" placeholder="Ej: Cien años de soledad">
+          <input type="text" id="modalBookTitle" class="form-control" placeholder="Ej: Cien años de soledad" minlength="3" maxlength="150" required>
         </div>
         <div class="form-grid-2">
           <div class="form-group">
-            <label>Código ISBN (isbn - RN-01) *</label>
-            <input type="text" id="modalBookIsbn" class="form-control" placeholder="978-0307474728">
+            <label>Código ISBN *</label>
+            <input type="text" id="modalBookIsbn" class="form-control" placeholder="Ej: 978-0307474728 o 0307474728" minlength="10" maxlength="17" required>
           </div>
           <div class="form-group">
             <label>Año Publicación (1000 - 2100) *</label>
@@ -1137,16 +1321,16 @@
       </div>
       <div class="modal-content">
         <div class="form-group">
-          <label>Documento de Identidad (document_number - RN-03) *</label>
-          <input type="text" id="modalUserDoc" class="form-control" placeholder="Ej: 1075248911">
+          <label>Documento de Identidad *</label>
+          <input type="text" id="modalUserDoc" class="form-control" placeholder="Ej: 1075248911" minlength="6" maxlength="15" inputmode="numeric" required>
         </div>
         <div class="form-group">
           <label>Nombre Completo (full_name) *</label>
-          <input type="text" id="modalUserName" class="form-control" placeholder="Ej: Juan David Romero">
+          <input type="text" id="modalUserName" class="form-control" placeholder="Ej: Juan David Romero" minlength="3" maxlength="120" required>
         </div>
         <div class="form-group">
           <label>Número Telefónico (phone) *</label>
-          <input type="text" id="modalUserPhone" class="form-control" placeholder="3124567890">
+          <input type="text" id="modalUserPhone" class="form-control" placeholder="Ej: 3124567890 (10 dígitos)" minlength="10" maxlength="10" inputmode="tel" required>
         </div>
       </div>
       <div class="modal-bottom">
@@ -1167,12 +1351,12 @@
       </div>
       <div class="modal-content">
         <div class="form-group">
-          <label>Código Identificador Normalizado (author_code - RN-02) *</label>
-          <input type="text" id="modalAuthorIsni" class="form-control" placeholder="0000-0001-2141-4109">
+          <label>Código Identificador Normalizado (ISNI / ORCID) *</label>
+          <input type="text" id="modalAuthorIsni" class="form-control" placeholder="Ej: 0000-0001-2141-4109" minlength="15" maxlength="19" required>
         </div>
         <div class="form-group">
           <label>Nombre Completo (name) *</label>
-          <input type="text" id="modalAuthorName" class="form-control" placeholder="Ej: Gabriel García Márquez">
+          <input type="text" id="modalAuthorName" class="form-control" placeholder="Ej: Gabriel García Márquez" minlength="3" maxlength="120" required>
         </div>
         <div class="form-group">
           <label>Nacionalidad (nationality) *</label>
@@ -1281,34 +1465,56 @@
     }
 
     // CAMBIO DE VISTAS
+    
+    // RESPONSIVE SIDEBAR TOGGLE (Obs 10)
+    function toggleSidebar() {
+      const aside = document.querySelector('aside');
+      const overlay = document.getElementById('sidebarOverlay');
+      aside.classList.toggle('sidebar-mobile-open');
+      overlay.classList.toggle('active');
+    }
+
     function switchView(viewKey) {
-      document.querySelectorAll('.nav-item').forEach(el => el.classList.remove('active'));
-      document.querySelectorAll('.view-section').forEach(el => el.classList.remove('active'));
+      document.querySelectorAll('.view-section').forEach(sec => sec.classList.remove('active'));
+      document.querySelectorAll('.nav-item').forEach(item => item.classList.remove('active'));
 
-      const activeNav = Array.from(document.querySelectorAll('.nav-item')).find(el => el.getAttribute('onclick')?.includes(viewKey));
-      if (activeNav) activeNav.classList.add('active');
+      const targetSection = document.getElementById(`view-${viewKey}`);
+      if (targetSection) targetSection.classList.add('active');
 
-      const target = document.getElementById('view-' + viewKey);
-      if (target) target.classList.add('active');
+      const navItems = document.querySelectorAll('.nav-item');
+      navItems.forEach(item => {
+        if (item.getAttribute('onclick') && item.getAttribute('onclick').includes(viewKey)) {
+          item.classList.add('active');
+        }
+      });
 
       const titles = {
-        dashboard: "Panel de Control y Circulación",
-        books: "Catálogo General de Libros (books)",
-        loans: "Control de Préstamos y Devoluciones (loans)",
-        users: "Directorio de Lectores y Usuarios (users)",
-        authors: "Catálogo de Autores (authors)",
+        dashboard: "Tablero General",
+        loans: "Control de Circulación y Préstamos",
+        books: "Catálogo de Libros y Ejemplares",
+        users: "Directorio de Lectores y Usuarios",
+        authors: "Catálogo de Autores",
         categories: "Clasificación Temática (categories - 3FN)",
+        backup: "Copia de Seguridad y Mantenimiento"
       };
       document.getElementById('pageTitle').textContent = titles[viewKey] || "Sistema de Biblioteca";
+
+      // En dispositivos móviles cerrar el menú tras navegar
+      if (window.innerWidth <= 768) {
+        const aside = document.querySelector('aside');
+        const overlay = document.getElementById('sidebarOverlay');
+        if (aside) aside.classList.remove('sidebar-mobile-open');
+        if (overlay) overlay.classList.remove('active');
+      }
 
       refreshUI();
     }
 
-    // MODALES
+    // MODAL CONTROL
     function openModal(id) {
       document.getElementById(id).classList.add('active');
       if (id === 'loanModal') {
-        populateLoanModal();
+        populateLoanDatalists();
         calculateDueDate();
       } else if (id === 'bookModal') {
         populateBookModalSelects();
@@ -1322,18 +1528,15 @@
         document.getElementById('bookModalTitle').textContent = 'Registrar Nuevo Libro';
         document.getElementById('modalBookTitle').value = '';
         document.getElementById('modalBookIsbn').value = '';
-        document.getElementById('modalBookYear').value = '2024';
-      } else if (id === 'userModal') {
-        document.getElementById('modalUserDoc').value = '';
-        document.getElementById('modalUserName').value = '';
-        document.getElementById('modalUserPhone').value = '';
-      } else if (id === 'authorModal') {
-        document.getElementById('modalAuthorIsni').value = '';
-        document.getElementById('modalAuthorName').value = '';
-        document.getElementById('modalAuthorNationality').value = '';
-      } else if (id === 'categoryModal') {
-        document.getElementById('modalCategoryName').value = '';
-        document.getElementById('modalCategoryDesc').value = '';
+        document.getElementById('modalBookYear').value = new Date().getFullYear();
+      } else if (id === 'loanModal') {
+        document.getElementById('modalLoanBookInput').value = '';
+        document.getElementById('modalLoanBookId').value = '';
+        document.getElementById('modalLoanUserInput').value = '';
+        document.getElementById('modalLoanUserId').value = '';
+        document.getElementById('modalLoanBookHelp').textContent = '';
+        document.getElementById('modalLoanUserHelp').textContent = '';
+        document.getElementById('modalLoanNotes').value = '';
       }
     }
 
@@ -1344,27 +1547,76 @@
       document.getElementById('modalLoanDueDate').value = target.toISOString().split('T')[0];
     }
 
-    function populateLoanModal() {
-      const uSelect = document.getElementById('modalLoanUser');
-      uSelect.innerHTML = '';
-      const activeUsers = db.users.filter(u => u.is_active);
-      if (activeUsers.length === 0) {
-        uSelect.innerHTML = `<option value="">No hay lectores activos</option>`;
-      } else {
-        activeUsers.forEach(u => {
-          uSelect.innerHTML += `<option value="${u.id}">${u.full_name} (Doc: ${u.document_number})</option>`;
-        });
-      }
-
-      const bSelect = document.getElementById('modalLoanBook');
-      bSelect.innerHTML = '';
+    // SELECTOR PREDICTIVO CON DATALIST (Obs 08)
+    function populateLoanDatalists() {
+      const bList = document.getElementById('modalLoanBookList');
+      bList.innerHTML = '';
       const avail = db.books.filter(b => !b.is_deleted && b.is_available);
-      if (avail.length === 0) {
-        bSelect.innerHTML = `<option value="">No hay libros disponibles</option>`;
+      avail.forEach(b => {
+        const author = db.authors.find(a => a.id === b.author_id);
+        const aName = author ? author.name : 'Autor desc.';
+        const opt = document.createElement('option');
+        opt.value = `[#${b.id}] ${b.title} — ${aName} (${b.isbn})`;
+        bList.appendChild(opt);
+      });
+
+      const uList = document.getElementById('modalLoanUserList');
+      uList.innerHTML = '';
+      const activeUsers = db.users.filter(u => u.is_active);
+      activeUsers.forEach(u => {
+        const opt = document.createElement('option');
+        opt.value = `[CC ${u.document_number}] ${u.full_name} (${u.phone || 'Sin tel.'})`;
+        uList.appendChild(opt);
+      });
+    }
+
+    function onLoanBookInput() {
+      const val = document.getElementById('modalLoanBookInput').value.trim();
+      const match = val.match(/^\[#(\d+)\]/);
+      const help = document.getElementById('modalLoanBookHelp');
+      if (match) {
+        const id = parseInt(match[1]);
+        document.getElementById('modalLoanBookId').value = id;
+        const b = db.books.find(x => x.id === id);
+        help.textContent = b ? `✔ Ejemplar: ${b.title}` : '';
+        help.style.color = "var(--success)";
       } else {
-        avail.forEach(b => {
-          bSelect.innerHTML += `<option value="${b.id}">#${b.id} - ${b.title}</option>`;
-        });
+        const b = db.books.find(x => !x.is_deleted && x.is_available && (x.title.toLowerCase() === val.toLowerCase() || x.isbn === val));
+        if (b) {
+          document.getElementById('modalLoanBookId').value = b.id;
+          help.textContent = `✔ Ejemplar: ${b.title}`;
+          help.style.color = "var(--success)";
+        } else {
+          document.getElementById('modalLoanBookId').value = '';
+          help.textContent = val ? "⚠️ Selecciona una opción del listado sugerido" : "";
+          help.style.color = "var(--warning)";
+        }
+      }
+    }
+
+    function onLoanUserInput() {
+      const val = document.getElementById('modalLoanUserInput').value.trim();
+      const match = val.match(/^\[CC\s*([^\]]+)\]/);
+      const help = document.getElementById('modalLoanUserHelp');
+      if (match) {
+        const doc = match[1].trim();
+        const u = db.users.find(x => x.document_number === doc && x.is_active);
+        if (u) {
+          document.getElementById('modalLoanUserId').value = u.id;
+          help.textContent = `✔ Lector: ${u.full_name}`;
+          help.style.color = "var(--success)";
+        }
+      } else {
+        const u = db.users.find(x => x.is_active && (x.document_number === val || x.full_name.toLowerCase() === val.toLowerCase()));
+        if (u) {
+          document.getElementById('modalLoanUserId').value = u.id;
+          help.textContent = `✔ Lector: ${u.full_name}`;
+          help.style.color = "var(--success)";
+        } else {
+          document.getElementById('modalLoanUserId').value = '';
+          help.textContent = val ? "⚠️ Selecciona un lector habilitado del listado" : "";
+          help.style.color = "var(--warning)";
+        }
       }
     }
 
@@ -1382,15 +1634,20 @@
       });
     }
 
-    // OPERACIÓN HU-05: PRESTAR LIBRO
+    // OPERACIÓN: PRESTAR LIBRO (RF-05 / HU-05)
     function confirmLoan() {
-      const userId = parseInt(document.getElementById('modalLoanUser').value);
-      const bookId = parseInt(document.getElementById('modalLoanBook').value);
+      const userId = parseInt(document.getElementById('modalLoanUserId').value);
+      const bookId = parseInt(document.getElementById('modalLoanBookId').value);
       const days = parseInt(document.getElementById('modalLoanDays').value) || 14;
       const notes = document.getElementById('modalLoanNotes').value.trim();
 
+      if (!userId) {
+        notify("Debe seleccionar un lector habilitado de la lista sugerida.", "error");
+        return;
+      }
+
       if (!bookId) {
-        notify("Debe seleccionar un ejemplar disponible.", "error");
+        notify("Debe seleccionar un libro disponible de la lista sugerida.", "error");
         return;
       }
 
@@ -1399,13 +1656,13 @@
 
       // Regla de Negocio RN-04: Usuario Activo
       if (!user || !user.is_active) {
-        notify("[RN-04]: Usuario no habilitado para préstamos", "error");
+        notify("El usuario seleccionado se encuentra inhabilitado para préstamos.", "error");
         return;
       }
 
       // Regla de Negocio RN-05: Libro Disponible y Unicidad de Préstamo Activo
       if (!book || !book.is_available || book.is_deleted) {
-        notify("[RN-05]: El libro seleccionado no cuenta con existencias disponibles para préstamo", "error");
+        notify("El ejemplar seleccionado no cuenta con disponibilidad para préstamo.", "error");
         return;
       }
 
@@ -1423,20 +1680,20 @@
         due_date: due.toISOString().split('T')[0],
         return_date: null,
         status: "ACTIVE",
-        notes: notes || "Préstamo de circulación regular"
+        notes: notes || "Préstamo regular de circulación"
       });
 
       saveDatabase(db);
       closeModal('loanModal');
-      notify("Préstamo registrado exitosamente"); // Criterio CA-1 HU-05
+      notify("Préstamo registrado exitosamente.");
       refreshUI();
     }
 
-    // OPERACIÓN HU-06: REGISTRAR DEVOLUCIÓN
+    // OPERACIÓN: REGISTRAR DEVOLUCIÓN (RF-06 / HU-06)
     function processReturn(loanId) {
       const loan = db.loans.find(l => l.id === loanId);
       if (!loan || loan.status !== 'ACTIVE') {
-        notify("No existe un préstamo activo para este libro", "warning"); // CA-3 HU-06
+        notify("No existe un préstamo activo para este registro.", "warning");
         return;
       }
 
@@ -1449,11 +1706,10 @@
 
       saveDatabase(db);
 
-      // Criterios CA-1 y CA-2 de HU-06
       if (today <= loan.due_date) {
-        notify("Devolución registrada a tiempo"); // CA-1 HU-06
+        notify("Devolución registrada a tiempo. Ejemplar reincorporado al catálogo.");
       } else {
-        notify("Devolución registrada con retraso", "warning"); // CA-2 HU-06
+        notify("Devolución registrada con retraso.", "warning");
       }
       refreshUI();
     }
@@ -1471,7 +1727,7 @@
       refreshUI();
     }
 
-    // OPERACIÓN HU-01 & HU-08: REGISTRAR Y EDITAR LIBRO
+    // OPERACIÓN: REGISTRAR Y EDITAR LIBRO (RF-01 / RF-08 / Obs 06)
     function saveBook() {
       const editId = document.getElementById('modalEditBookId').value;
       const title = document.getElementById('modalBookTitle').value.trim();
@@ -1480,15 +1736,26 @@
       const authorId = parseInt(document.getElementById('modalBookAuthor').value);
       const categoryId = parseInt(document.getElementById('modalBookCategory').value);
 
-      // Criterio CA-2 HU-01: Campos Obligatorios
+      // Validación de longitud y vacíos (Obs 06)
       if (!title || !isbn || !year || !authorId || !categoryId) {
-        notify("Campo obligatorio. No puede dejar valores vacíos.", "error");
+        notify("Todos los campos marcados con asterisco son obligatorios.", "error");
         return;
       }
 
-      // Restricción CHECK de Base de Datos: 1000 a 2100
-      if (year < 1000 || year > 2100) {
-        notify("El año de publicación debe estar entre 1000 y 2100.", "error");
+      if (title.length < 3) {
+        notify("El título de la obra debe contener al menos 3 caracteres.", "error");
+        return;
+      }
+
+      // Validación estricta de formato ISBN (Obs 06)
+      const cleanIsbn = isbn.replace(/[- ]/g, '');
+      if (!/^(\d{10}|\d{13})$/i.test(cleanIsbn)) {
+        notify("El ISBN debe tener un formato internacional válido (10 o 13 dígitos numéricos).", "error");
+        return;
+      }
+
+      if (year < 1000 || year > 2026) {
+        notify("El año de publicación debe estar comprendido entre 1000 y 2026.", "error");
         return;
       }
 
@@ -1500,12 +1767,12 @@
           book.publication_year = year;
           book.author_id = authorId;
           book.category_id = categoryId;
-          notify("Libro actualizado correctamente"); // CA-1 HU-08
+          notify("Libro actualizado correctamente.");
         }
       } else {
         // Regla de Negocio RN-01: Unicidad de ISBN
-        if (db.books.some(b => b.isbn.toLowerCase() === isbn.toLowerCase())) {
-          notify("[RN-01]: Registro ISBN existente", "error"); // CA-3 HU-01
+        if (db.books.some(b => b.isbn.replace(/[- ]/g, '').toLowerCase() === cleanIsbn.toLowerCase())) {
+          notify("El código ISBN ingresado ya se encuentra registrado en el catálogo.", "error");
           return;
         }
 
@@ -1520,7 +1787,7 @@
           is_available: true,
           is_deleted: false
         });
-        notify("Libro registrado correctamente"); // CA-1 HU-01
+        notify("Libro registrado en el catálogo correctamente.");
       }
 
       saveDatabase(db);
@@ -1543,42 +1810,56 @@
       openModal('bookModal');
     }
 
-    // OPERACIÓN HU-08 (CA-2 y CA-3): BAJA LÓGICA Y BLOQUEO POR PRÉSTAMO
+    // OPERACIÓN: BAJA LÓGICA Y BLOQUEO POR PRÉSTAMO (RF-08 / RN-05)
     function toggleDeleteBook(id) {
       const book = db.books.find(b => b.id === id);
       if (!book) return;
 
-      // Criterio CA-3 HU-08 y Regla RN-05: Bloqueo si tiene préstamo activo
       if (!book.is_available && !book.is_deleted) {
-        notify("[RN-05]: No se puede eliminar un libro que tiene un préstamo activo", "error");
+        notify("Operación rechazada: No se puede dar de baja un ejemplar con préstamo activo.", "error");
         return;
       }
 
       book.is_deleted = !book.is_deleted;
       saveDatabase(db);
       if (book.is_deleted) {
-        notify("Libro dado de baja del catálogo exitosamente"); // CA-2 HU-08
+        notify("Ejemplar dado de baja del catálogo activo exitosamente.");
       } else {
-        notify("Libro restaurado al catálogo activo");
+        notify("Ejemplar restaurado al catálogo activo.");
       }
       refreshUI();
     }
 
-    // OPERACIÓN HU-03: REGISTRAR USUARIO
+    // OPERACIÓN: REGISTRAR USUARIO (RF-03 / Obs 06)
     function saveUser() {
       const doc = document.getElementById('modalUserDoc').value.trim();
       const name = document.getElementById('modalUserName').value.trim();
       const phone = document.getElementById('modalUserPhone').value.trim();
 
-      // Criterio CA-2 HU-03: Campos Vacíos
       if (!doc || !name || !phone) {
-        notify("Campo obligatorio. Diligencie documento, nombre y teléfono.", "error");
+        notify("Todos los campos del lector son obligatorios.", "error");
         return;
       }
 
-      // Regla RN-03 / CA-3 HU-03: Documento Duplicado
+      // Validación estricta con expresiones regulares (Obs 06)
+      if (!/^\d{6,15}$/.test(doc)) {
+        notify("El documento de identidad debe contener entre 6 y 15 dígitos numéricos.", "error");
+        return;
+      }
+
+      if (name.length < 3) {
+        notify("El nombre completo debe tener al menos 3 caracteres.", "error");
+        return;
+      }
+
+      if (!/^\d{10}$/.test(phone)) {
+        notify("El número telefónico debe contener exactamente 10 dígitos numéricos.", "error");
+        return;
+      }
+
+      // Regla de Negocio RN-03: Documento Duplicado
       if (db.users.some(u => u.document_number === doc)) {
-        notify("[RN-03]: Este documento ya se encuentra registrado", "error");
+        notify("Este número de documento ya pertenece a un usuario registrado.", "error");
         return;
       }
 
@@ -1593,7 +1874,7 @@
 
       saveDatabase(db);
       closeModal('userModal');
-      notify("Usuario registrado exitosamente"); // CA-1 HU-03
+      notify("Usuario lector registrado exitosamente.");
       refreshUI();
     }
 
@@ -1607,21 +1888,31 @@
       }
     }
 
-    // OPERACIÓN HU-02: REGISTRAR AUTOR
+    // OPERACIÓN: REGISTRAR AUTOR (RF-02 / Obs 06)
     function saveAuthor() {
       const code = document.getElementById('modalAuthorIsni').value.trim();
       const name = document.getElementById('modalAuthorName').value.trim();
       const nationality = document.getElementById('modalAuthorNationality').value.trim();
 
-      // Criterio CA-2 HU-02
       if (!code || !name) {
-        notify("Identificación mínima insuficiente. Ingrese código y nombre.", "error");
+        notify("Código y nombre del autor son obligatorios.", "error");
         return;
       }
 
-      // Regla RN-02 / CA-3 HU-02: Identificador Duplicado
-      if (db.authors.some(a => a.author_code.toLowerCase() === code.toLowerCase())) {
-        notify("[RN-02]: Este identificador ya se encuentra registrado para otro autor", "error");
+      const cleanCode = code.replace(/[- ]/g, '');
+      if (cleanCode.length !== 16) {
+        notify("El código normalizado ISNI / ORCID debe contener 16 caracteres alfanuméricos.", "error");
+        return;
+      }
+
+      if (name.length < 3) {
+        notify("El nombre del autor debe tener al menos 3 caracteres.", "error");
+        return;
+      }
+
+      // Regla de Negocio RN-02: Identificador Duplicado
+      if (db.authors.some(a => a.author_code.replace(/[- ]/g, '').toLowerCase() === cleanCode.toLowerCase())) {
+        notify("Este código identificador ya pertenece a otro autor en el sistema.", "error");
         return;
       }
 
@@ -1635,17 +1926,22 @@
 
       saveDatabase(db);
       closeModal('authorModal');
-      notify("Autor registrado correctamente"); // CA-1 HU-02
+      notify("Autor registrado en el catálogo maestro.");
       refreshUI();
     }
 
-    // OPERACIÓN 3FN: REGISTRAR CATEGORÍA
+    // OPERACIÓN: REGISTRAR CATEGORÍA (3FN)
     function saveCategory() {
       const name = document.getElementById('modalCategoryName').value.trim();
       const desc = document.getElementById('modalCategoryDesc').value.trim();
 
       if (!name) {
         notify("El nombre de la categoría es obligatorio.", "error");
+        return;
+      }
+
+      if (name.length < 3) {
+        notify("El nombre de la categoría debe tener al menos 3 caracteres.", "error");
         return;
       }
 
@@ -1658,38 +1954,109 @@
       db.categories.push({
         id: nextId,
         name: name,
-        description: desc || "Sin descripción adicional"
+        description: desc || "Clasificación temática general"
       });
 
       saveDatabase(db);
       closeModal('categoryModal');
-      notify(`Categoría "${name}" registrada.`);
+      notify("Categoría temática agregada al catálogo.");
       refreshUI();
     }
 
-    // RENDERIZADO GENERAL Y VINCULACIÓN DE CLAVES FORÁNEAS (3FN)
+    // GESTIÓN DE COPIA DE SEGURIDAD COMPLETA (Obs 07: Exportación e Importación con FileReader)
+    function exportDataBackup() {
+      const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(db, null, 2));
+      const downloadAnchor = document.createElement('a');
+      downloadAnchor.setAttribute("href", dataStr);
+      downloadAnchor.setAttribute("download", `biblioteca_backup_schema_3fn_${new Date().toISOString().split('T')[0]}.json`);
+      document.body.appendChild(downloadAnchor);
+      downloadAnchor.click();
+      downloadAnchor.remove();
+      notify("Copia de seguridad descargada exitosamente en formato JSON.");
+    }
+
+    function handleImportFile(event) {
+      const file = event.target.files[0];
+      if (!file) return;
+
+      const reader = new FileReader();
+      reader.onload = function(e) {
+        try {
+          const parsed = JSON.parse(e.target.result);
+          // Validar presencia de las 5 tablas relacionales del modelo 3FN
+          if (!Array.isArray(parsed.categories) || !Array.isArray(parsed.authors) || 
+              !Array.isArray(parsed.books) || !Array.isArray(parsed.users) || 
+              !Array.isArray(parsed.loans)) {
+            notify("Archivo rechazado: Debe contener las 5 tablas relacionales (categories, authors, books, users, loans).", "error");
+            return;
+          }
+
+          if (confirm(`¿Confirmas restaurar la copia de seguridad?\nSe cargarán: ${parsed.books.length} libros, ${parsed.users.length} lectores y ${parsed.loans.length} préstamos.`)) {
+            db = parsed;
+            saveDatabase(db);
+            notify("Base de datos restaurada correctamente desde el archivo JSON.");
+            refreshUI();
+          }
+        } catch (err) {
+          notify("Error al procesar el archivo: Formato JSON malformado o corrupto.", "error");
+        } finally {
+          event.target.value = '';
+        }
+      };
+      reader.readAsText(file);
+    }
+
+    function resetToDefaultData() {
+      if (confirm("¿Confirmas restablecer todos los registros al esquema oficial de la Fase 4 (schema.sql)?")) {
+        db = JSON.parse(JSON.stringify(SEED_DATA));
+        saveDatabase(db);
+        notify("Base de datos restablecida con los datos semilla oficiales.");
+        refreshUI();
+      }
+    }
+
+    // RENDERIZADO Y ALERTAS PROACTIVAS DE VENCIMIENTO (Obs 12 & Table-to-Cards Obs 11)
     function refreshUI() {
+      const today = new Date().toISOString().split('T')[0];
       const activeBooks = db.books.filter(b => !b.is_deleted);
       const availBooks = activeBooks.filter(b => b.is_available);
       const activeLoans = db.loans.filter(l => l.status === 'ACTIVE');
+      const overdueLoans = activeLoans.filter(l => l.due_date < today);
+
+      // Alertas preventivas para las próximas 48 horas (Obs 12)
+      const in48HoursDate = new Date();
+      in48HoursDate.setDate(in48HoursDate.getDate() + 2);
+      const in48HoursStr = in48HoursDate.toISOString().split('T')[0];
+      const expiringSoon = activeLoans.filter(l => l.due_date >= today && l.due_date <= in48HoursStr);
+
+      const alertBanner = document.getElementById('proactiveAlertBanner');
+      const alertText = document.getElementById('proactiveAlertText');
+      if (alertBanner && alertText) {
+        if (overdueLoans.length > 0 || expiringSoon.length > 0) {
+          let msg = "";
+          if (overdueLoans.length > 0) {
+            msg += `<strong>Atención Requerida:</strong> Hay <strong>${overdueLoans.length}</strong> préstamo(s) en estado de mora/vencido. `;
+          }
+          if (expiringSoon.length > 0) {
+            msg += `Hay <strong>${expiringSoon.length}</strong> préstamo(s) próximos a vencer en las próximas 48 horas.`;
+          }
+          alertText.innerHTML = msg;
+          alertBanner.style.display = 'block';
+        } else {
+          alertBanner.style.display = 'none';
+        }
+      }
 
       document.getElementById('kpiBooks').textContent = activeBooks.length;
       document.getElementById('kpiAvailable').textContent = availBooks.length;
       document.getElementById('kpiLoans').textContent = activeLoans.length;
       document.getElementById('kpiUsers').textContent = db.users.filter(u => u.is_active).length;
+      const kpiOverdueElem = document.getElementById('kpiOverdue');
+      if (kpiOverdueElem) kpiOverdueElem.textContent = overdueLoans.length;
 
-      document.getElementById('navTotalBooks').textContent = activeBooks.length;
-      document.getElementById('navActiveLoans').textContent = activeLoans.length;
-
-      // Filtro de categorías dinámico
-      const catSelect = document.getElementById('bookCategoryFilter');
-      const currentCat = catSelect.value;
-      catSelect.innerHTML = '<option value="ALL">Todas las Categorías</option>';
-      db.categories.forEach(c => {
-        catSelect.innerHTML += `<option value="${c.id}" ${c.id == currentCat ? 'selected' : ''}>${c.name}</option>`;
-      });
-
-      renderDashboardTables();
+      // Actualizar filtros
+      populateCategoryFilters();
+      renderDashboardRecentLoans();
       renderBooksTable();
       renderLoansTable();
       renderUsersTable();
@@ -1697,124 +2064,110 @@
       renderCategoriesTable();
     }
 
-    function renderDashboardTables() {
-      const loansTbody = document.getElementById('dashLoansTbody');
-      loansTbody.innerHTML = '';
-      const active = db.loans.filter(l => l.status === 'ACTIVE').slice(0, 5);
+    function populateCategoryFilters() {
+      const sel = document.getElementById('bookCategoryFilter');
+      const current = sel.value;
+      sel.innerHTML = '<option value="ALL">Todas las Categorías</option>';
+      db.categories.forEach(c => {
+        sel.innerHTML += `<option value="${c.id}">${c.name}</option>`;
+      });
+      sel.value = current;
+    }
 
-      if (active.length === 0) {
-        loansTbody.innerHTML = `<tr><td colspan="7" style="text-align:center; color:var(--text-muted); padding:2rem;">No hay préstamos activos en este momento.</td></tr>`;
-      } else {
-        active.forEach(l => {
-          const book = db.books.find(b => b.id === l.book_id);
-          const user = db.users.find(u => u.id === l.user_id);
-          loansTbody.innerHTML += `
-            <tr>
-              <td><strong>#${l.id}</strong></td>
-              <td><strong>${book ? book.title : 'N/A'}</strong></td>
-              <td>${user ? user.full_name : 'N/A'}</td>
-              <td>${l.loan_date}</td>
-              <td style="color:var(--primary); font-weight:600;">${l.due_date}</td>
-              <td><span class="badge badge-warning">En Curso</span></td>
-              <td style="text-align:right;">
-                <button class="btn-table primary" onclick="processReturn(${l.id})">📥 Devolver</button>
-              </td>
-            </tr>
-          `;
-        });
+    function renderDashboardRecentLoans() {
+      const tbody = document.getElementById('recentLoansTbody');
+      tbody.innerHTML = '';
+      const today = new Date().toISOString().split('T')[0];
+      const activeLoans = db.loans.filter(l => l.status === 'ACTIVE').slice(0, 5);
+
+      if (activeLoans.length === 0) {
+        tbody.innerHTML = '<tr><td colspan="6" style="text-align:center; color:var(--text-muted); padding:1.5rem;">No hay préstamos activos en este momento.</td></tr>';
+        return;
       }
 
-      const booksTbody = document.getElementById('dashBooksTbody');
-      booksTbody.innerHTML = '';
-      const avail = db.books.filter(b => !b.is_deleted && b.is_available).slice(0, 5);
+      activeLoans.forEach(l => {
+        const book = db.books.find(b => b.id === l.book_id);
+        const user = db.users.find(u => u.id === l.user_id);
+        const isOverdue = l.due_date < today;
 
-      avail.forEach(b => {
-        const author = db.authors.find(a => a.id === b.author_id);
-        const category = db.categories.find(c => c.id === b.category_id);
-        booksTbody.innerHTML += `
+        tbody.innerHTML += `
           <tr>
-            <td style="font-family:monospace; color:var(--primary); font-weight:600;">${b.isbn}</td>
-            <td><strong>${b.title}</strong></td>
-            <td>${author ? author.name : 'N/A'}</td>
-            <td>${category ? category.name : 'N/A'}</td>
-            <td>${b.publication_year}</td>
-            <td><span class="badge badge-success">Disponible</span></td>
-            <td style="text-align:right;">
-              <button class="btn-table" onclick="quickLoan(${b.id})">📤 Prestar</button>
+            <td data-label="N° Préstamo"><strong>#${l.id}</strong></td>
+            <td data-label="Libro"><strong>${book ? book.title : 'Desconocido'}</strong></td>
+            <td data-label="Lector">${user ? user.full_name : 'Desconocido'}</td>
+            <td data-label="Fecha Préstamo">${l.loan_date}</td>
+            <td data-label="Fecha Límite" style="font-weight:600; color:${isOverdue ? 'var(--danger)' : 'var(--text)'};">
+              ${l.due_date} ${isOverdue ? '<span class="badge badge-danger">Vencido</span>' : ''}
+            </td>
+            <td data-label="Acción" style="text-align:right;">
+              <button class="btn-table primary" onclick="processReturn(${l.id})">📥 Devolver</button>
             </td>
           </tr>
         `;
       });
     }
 
-    function quickLoan(bookId) {
-      openModal('loanModal');
-      document.getElementById('modalLoanBook').value = bookId;
-    }
-
-    // OPERACIÓN HU-07: BÚSQUEDA MULTI-CRITERIO Y FILTRO (RF-07)
     function renderBooksTable() {
-      const q = document.getElementById('bookSearch').value.toLowerCase().trim();
-      const catId = document.getElementById('bookCategoryFilter').value;
-      const status = document.getElementById('bookStatusFilter').value;
+      const query = document.getElementById('bookSearch').value.toLowerCase().trim();
+      const catFilter = document.getElementById('bookCategoryFilter').value;
+      const statusFilter = document.getElementById('bookStatusFilter').value;
 
-      const filtered = db.books.filter(b => {
-        if (status === 'DELETED') {
-          if (!b.is_deleted) return false;
-        } else {
-          if (b.is_deleted) return false;
-        }
-
+      let filtered = db.books.filter(b => {
         const author = db.authors.find(a => a.id === b.author_id);
-        const category = db.categories.find(c => c.id === b.category_id);
         const aName = author ? author.name.toLowerCase() : '';
-        const cName = category ? category.name.toLowerCase() : '';
+        const matchesQuery = b.title.toLowerCase().includes(query) || 
+                             b.isbn.toLowerCase().includes(query) || 
+                             aName.includes(query);
 
-        const matchQ = b.title.toLowerCase().includes(q) || b.isbn.toLowerCase().includes(q) || aName.includes(q) || cName.includes(q);
-        const matchCat = catId === 'ALL' || b.category_id == catId;
-        const matchStatus = status === 'ALL' || status === 'DELETED' ||
-          (status === 'AVAILABLE' && b.is_available) ||
-          (status === 'LOANED' && !b.is_available);
+        const matchesCat = (catFilter === 'ALL' || b.category_id === parseInt(catFilter));
 
-        return matchQ && matchCat && matchStatus;
+        let matchesStatus = true;
+        if (statusFilter === 'AVAILABLE') matchesStatus = !b.is_deleted && b.is_available;
+        else if (statusFilter === 'LOANED') matchesStatus = !b.is_deleted && !b.is_available;
+        else if (statusFilter === 'DELETED') matchesStatus = b.is_deleted;
+        else if (statusFilter === 'ALL') matchesStatus = true;
+
+        return matchesQuery && matchesCat && matchesStatus;
       });
 
       const tbody = document.getElementById('booksTbody');
       tbody.innerHTML = '';
 
       if (filtered.length === 0) {
-        tbody.innerHTML = `<tr><td colspan="8" style="text-align:center; color:var(--text-muted); padding:2rem;">No encontrado (HU-07: Sin coincidencias en inventario).</td></tr>`;
+        tbody.innerHTML = `<tr><td colspan="8" style="text-align:center; color:var(--text-muted); padding:2rem;">No se encontraron libros con los criterios de búsqueda.</td></tr>`;
         return;
       }
 
       filtered.forEach(b => {
         const author = db.authors.find(a => a.id === b.author_id);
         const category = db.categories.find(c => c.id === b.category_id);
-        let badge = b.is_available
-          ? `<span class="badge badge-success">Disponible</span>`
-          : `<span class="badge badge-warning">En Préstamo</span>`;
 
+        let badge = '<span class="badge badge-success">Disponible</span>';
         if (b.is_deleted) {
-          badge = `<span class="badge badge-danger">Baja Lógica</span>`;
+          badge = '<span class="badge badge-danger">Baja Lógica (is_deleted)</span>';
+        } else if (!b.is_available) {
+          badge = '<span class="badge badge-warning">En Préstamo</span>';
         }
 
+        const actionBtns = b.is_deleted
+          ? `<button class="btn-table primary" onclick="toggleDeleteBook(${b.id})">Restaurar</button>`
+          : `
+            <div class="action-group" style="justify-content:flex-end;">
+              <button class="btn-table" onclick="editBook(${b.id})">Editar</button>
+              <button class="btn-table danger" onclick="toggleDeleteBook(${b.id})">Baja</button>
+            </div>
+          `;
+
         tbody.innerHTML += `
-          <tr>
-            <td><strong>#${b.id}</strong></td>
-            <td style="font-family:monospace; color:var(--primary); font-size:0.82rem; font-weight:600;">${b.isbn}</td>
-            <td><strong>${b.title}</strong></td>
-            <td>${author ? author.name : 'N/A'}</td>
-            <td>${category ? category.name : 'N/A'}</td>
-            <td>${b.publication_year}</td>
-            <td>${badge}</td>
-            <td style="text-align:right;">
-              <div class="action-group" style="justify-content:flex-end;">
-                <button class="btn-table" onclick="editBook(${b.id})">Editar</button>
-                <button class="btn-table danger" onclick="toggleDeleteBook(${b.id})">
-                  ${b.is_deleted ? 'Restaurar' : 'Baja'}
-                </button>
-              </div>
-            </td>
+          <tr style="${b.is_deleted ? 'opacity:0.65; background:#f9f9f9;' : ''}">
+            <td data-label="ID"><strong>#${b.id}</strong></td>
+            <td data-label="ISBN" style="font-family:monospace; font-size:0.85rem;">${b.isbn}</td>
+            <td data-label="Título"><strong>${b.title}</strong></td>
+            <td data-label="Autor">${author ? author.name : 'N/A'}</td>
+            <td data-label="Categoría"><span class="badge badge-neutral">${category ? category.name : 'N/A'}</span></td>
+            <td data-label="Año">${b.publication_year}</td>
+            <td data-label="Estado">${badge}</td>
+            <td data-label="Acciones" style="text-align:right;">${actionBtns}</td>
           </tr>
         `;
       });
@@ -1825,19 +2178,20 @@
       const statusFilter = document.getElementById('loanStatusFilter').value;
       const today = new Date().toISOString().split('T')[0];
 
-      const filtered = db.loans.filter(l => {
+      let filtered = db.loans.filter(l => {
         const book = db.books.find(b => b.id === l.book_id);
         const user = db.users.find(u => u.id === l.user_id);
         const bTitle = book ? book.title.toLowerCase() : '';
         const uName = user ? user.full_name.toLowerCase() : '';
-        const matchQ = bTitle.includes(q) || uName.includes(q) || String(l.id).includes(q);
 
-        let matchStatus = true;
-        if (statusFilter === 'ACTIVE') matchStatus = l.status === 'ACTIVE';
-        else if (statusFilter === 'RETURNED') matchStatus = l.status === 'RETURNED';
-        else if (statusFilter === 'OVERDUE') matchStatus = l.status === 'ACTIVE' && l.due_date < today;
+        const matchesQuery = bTitle.includes(q) || uName.includes(q) || l.id.toString().includes(q);
 
-        return matchQ && matchStatus;
+        let matchesStatus = true;
+        if (statusFilter === 'ACTIVE') matchesStatus = (l.status === 'ACTIVE');
+        else if (statusFilter === 'RETURNED') matchesStatus = (l.status === 'RETURNED');
+        else if (statusFilter === 'OVERDUE') matchesStatus = (l.status === 'ACTIVE' && l.due_date < today);
+
+        return matchesQuery && matchesStatus;
       });
 
       const tbody = document.getElementById('loansTbody');
@@ -1869,16 +2223,16 @@
 
         tbody.innerHTML += `
           <tr>
-            <td><strong>#${l.id}</strong></td>
-            <td><strong>${book ? book.title : 'N/A'}</strong></td>
-            <td>${user ? user.full_name : 'N/A'}</td>
-            <td>${l.loan_date}</td>
-            <td style="font-weight:600; color:${isOverdue ? 'var(--danger)' : (isReturned ? 'var(--text-muted)' : 'var(--primary)')};">
+            <td data-label="N° Préstamo"><strong>#${l.id}</strong></td>
+            <td data-label="Libro"><strong>${book ? book.title : 'N/A'}</strong></td>
+            <td data-label="Lector">${user ? user.full_name : 'N/A'}</td>
+            <td data-label="Fecha Préstamo">${l.loan_date}</td>
+            <td data-label="Fecha Límite" style="font-weight:600; color:${isOverdue ? 'var(--danger)' : (isReturned ? 'var(--text-muted)' : 'var(--primary)')};">
               ${l.due_date} ${isOverdue ? '⚠' : ''}
             </td>
-            <td>${l.return_date ? l.return_date : '<span style="color:var(--text-muted);">-</span>'}</td>
-            <td>${badge}</td>
-            <td style="text-align:right;">${actionBtns}</td>
+            <td data-label="Fecha Devolución">${l.return_date ? l.return_date : '<span style="color:var(--text-muted);">-</span>'}</td>
+            <td data-label="Estado">${badge}</td>
+            <td data-label="Acciones" style="text-align:right;">${actionBtns}</td>
           </tr>
         `;
       });
@@ -1899,12 +2253,12 @@
 
         tbody.innerHTML += `
           <tr>
-            <td style="font-family:monospace; font-weight:600;">${u.document_number}</td>
-            <td><strong>${u.full_name}</strong></td>
-            <td>${u.phone || 'N/A'}</td>
-            <td><strong>${activeCount}</strong> ejemplares</td>
-            <td>${badge}</td>
-            <td style="text-align:right;">
+            <td data-label="Documento" style="font-family:monospace; font-weight:600;">${u.document_number}</td>
+            <td data-label="Nombre"><strong>${u.full_name}</strong></td>
+            <td data-label="Teléfono">${u.phone || 'N/A'}</td>
+            <td data-label="Préstamos Activos"><strong>${activeCount}</strong> ejemplares</td>
+            <td data-label="Estado">${badge}</td>
+            <td data-label="Acciones" style="text-align:right;">
               <button class="btn-table" onclick="toggleUser(${u.id})">
                 ${u.is_active ? 'Inhabilitar' : 'Habilitar'}
               </button>
@@ -1925,10 +2279,10 @@
         const count = db.books.filter(b => b.author_id === a.id && !b.is_deleted).length;
         tbody.innerHTML += `
           <tr>
-            <td style="font-family:monospace; color:var(--text-muted); font-size:0.82rem;">${a.author_code}</td>
-            <td><strong>${a.name}</strong></td>
-            <td>${a.nationality}</td>
-            <td><span class="badge badge-neutral">${count} libros</span></td>
+            <td data-label="Código ISNI" style="font-family:monospace; color:var(--text-muted); font-size:0.82rem;">${a.author_code}</td>
+            <td data-label="Nombre"><strong>${a.name}</strong></td>
+            <td data-label="Nacionalidad">${a.nationality}</td>
+            <td data-label="Obras"><span class="badge badge-neutral">${count} libros</span></td>
           </tr>
         `;
       });
@@ -1942,10 +2296,10 @@
         const count = db.books.filter(b => b.category_id === c.id && !b.is_deleted).length;
         tbody.innerHTML += `
           <tr>
-            <td><strong>#${c.id}</strong></td>
-            <td><strong>${c.name}</strong></td>
-            <td style="color:var(--text-muted); font-size:0.82rem;">${c.description}</td>
-            <td><span class="badge badge-neutral">${count} obras</span></td>
+            <td data-label="ID"><strong>#${c.id}</strong></td>
+            <td data-label="Nombre"><strong>${c.name}</strong></td>
+            <td data-label="Descripción" style="color:var(--text-muted); font-size:0.82rem;">${c.description}</td>
+            <td data-label="Obras"><span class="badge badge-neutral">${count} obras</span></td>
           </tr>
         `;
       });
