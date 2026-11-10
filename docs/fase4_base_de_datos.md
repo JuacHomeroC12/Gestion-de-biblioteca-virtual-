@@ -288,13 +288,25 @@ En el esquema de base de datos se mantiene el estado `'OVERDUE'` dentro del `CON
 El script oficial se encuentra ubicado en:  
 👉 [`database/schema.sql`](../database/schema.sql)
 
-### Ejecución mediante Consola MySQL:
+### 7.1. Despliegue Automatizado con Docker Compose (Recomendado para Fase 5 y 6):
+El repositorio cuenta con el archivo [`docker-compose.yml`](../docker-compose.yml) en la raíz del proyecto, el cual levanta un contenedor **MySQL 8.0 (`InnoDB`)** configurado en `utf8mb4_unicode_ci` y ejecuta automáticamente `database/schema.sql` al iniciar por primera vez:
+
+```bash
+# 1. Levantar el contenedor de base de datos en segundo plano
+docker compose up -d
+
+# 2. Verificar que las 5 tablas y los datos semilla fueron creados
+docker exec -it biblioteca_mysql mysql -u root -proot1234 digital_library -e "SHOW TABLES;"
+```
+
+### 7.2. Ejecución Directa mediante Consola MySQL:
 ```bash
 mysql -u root -p < database/schema.sql
 ```
 
-### Ejecución mediante MySQL Workbench o phpMyAdmin:
+### 7.3. Ejecución mediante MySQL Workbench o phpMyAdmin:
 1. Abrir **MySQL Workbench** o **phpMyAdmin**.
 2. Crear una nueva pestaña de consulta SQL.
 3. Cargar el contenido de `database/schema.sql` y presionar **Execute (Ctrl + Shift + Enter)**.
 4. El script creará la base de datos `digital_library`, sus 5 tablas, índices y datos semilla de prueba.
+
