@@ -1074,6 +1074,34 @@
         width: 100%;
       }
     }
+
+    /* COPIA DE SEGURIDAD (Obs 07) */
+    .backup-row {
+      padding: 1rem;
+      border: 1px solid var(--border);
+      border-radius: var(--radius-md);
+      background: #faf7f2;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 0.75rem;
+    }
+    .backup-row strong {
+      display: block;
+      font-size: 0.95rem;
+      color: var(--text);
+    }
+    .backup-row span {
+      font-size: 0.8rem;
+      color: var(--text-muted);
+    }
+    @media (max-width: 768px) {
+      .backup-row .btn {
+        width: 100%;
+        justify-content: center;
+      }
+    }
   </style>
 </head>
 <body>
@@ -1122,6 +1150,12 @@
       <div class="nav-item" onclick="switchView('users')">
         <svg fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"/></svg>
         <span>Lectores</span>
+      </div>
+
+      <div class="nav-label">Administración</div>
+      <div class="nav-item" onclick="switchView('backup')">
+        <svg fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12"/></svg>
+        <span>Copia de Seguridad</span>
       </div>
     </div>
 
@@ -1449,6 +1483,50 @@
               </thead>
               <tbody id="categoriesTbody"></tbody>
             </table>
+          </div>
+        </div>
+      </section>
+
+      <!-- ============================================== -->
+      <!-- 7. COPIA DE SEGURIDAD (Obs 07: exportar e      -->
+      <!--    importar respaldo con validación)           -->
+      <!-- ============================================== -->
+      <section id="view-backup" class="view-section">
+        <div class="card" style="max-width: 720px;">
+          <div class="card-header">
+            <h3 class="card-title">Copia de Seguridad de la Información</h3>
+          </div>
+          <div style="padding: 1.5rem;">
+            <p style="font-size:0.9rem; color:var(--text-muted); margin-bottom:1.5rem; line-height:1.5;">
+              La información de la biblioteca (libros, autores, categorías, lectores y préstamos) se guarda en este navegador. Descargue una copia con frecuencia para poder recuperarla si cambia de equipo o se borran los datos.
+            </p>
+
+            <div style="display:flex; flex-direction:column; gap:1rem;">
+              <div class="backup-row">
+                <div>
+                  <strong>Descargar copia de seguridad</strong>
+                  <span>Guarda en su equipo un archivo .json con toda la información actual.</span>
+                </div>
+                <button class="btn btn-outline" type="button" onclick="exportDataBackup()">📥 Descargar copia</button>
+              </div>
+
+              <div class="backup-row">
+                <div>
+                  <strong>Cargar copia de seguridad</strong>
+                  <span>Recupera la información desde un archivo .json descargado antes. Reemplaza los datos actuales.</span>
+                </div>
+                <label class="btn btn-primary" for="backupFileInput" style="cursor:pointer;">📤 Cargar copia</label>
+                <input type="file" id="backupFileInput" accept=".json,application/json" style="display:none;" onchange="importDataBackup(event)">
+              </div>
+
+              <div class="backup-row">
+                <div>
+                  <strong>Volver a los datos de ejemplo</strong>
+                  <span>Borra la información actual y carga los datos de ejemplo iniciales.</span>
+                </div>
+                <button class="btn btn-danger" type="button" onclick="resetToDefaultData()">🔄 Restablecer</button>
+              </div>
+            </div>
           </div>
         </div>
       </section>
@@ -2261,6 +2339,166 @@
     let db = loadDatabase();
 
     // =====================================================================
+    // COPIA DE SEGURIDAD: DESCARGAR, CARGAR Y RESTABLECER (Obs 07)
+    // =====================================================================
+    const BACKUP_TABLES = ['categories', 'authors', 'books', 'users', 'loans'];
+    const BACKUP_MAX_BYTES = 5 * 1024 * 1024;   // 5 MB
+    const LOAN_STATUSES = ['ACTIVE', 'RETURNED', 'OVERDUE'];
+    const ISO_DATE = /^\d{4}-\d{2}-\d{2}$/;
+
+    function exportDataBackup() {
+      const payload = {};
+      BACKUP_TABLES.forEach(t => payload[t] = db[t]);
+      const blob = new Blob([JSON.stringify(payload, null, 2)], { type: 'application/json' });
+      const url = URL.createObjectURL(blob);
+      const link = document.createElement('a');
+      link.href = url;
+      link.download = `copia_biblioteca_${todayStr()}.json`;
+      document.body.appendChild(link);
+      link.click();
+      link.remove();
+      setTimeout(() => URL.revokeObjectURL(url), 1000);
+      notify("Copia de seguridad descargada.");
+    }
+
+    // Revisa que el archivo tenga la estructura y los datos que espera el sistema.
+    // Devuelve el texto del problema encontrado, o null si todo está correcto.
+    function validateBackupData(data) {
+      if (!hasValidStructure(data)) {
+        return "faltan secciones de información (libros, autores, categorías, lectores o préstamos).";
+      }
+      const isInt = v => Number.isInteger(v) && v > 0;
+      const isText = v => typeof v === 'string' && v.trim().length > 0;
+      const isBool = v => typeof v === 'boolean';
+      const names = { categories: 'categorías', authors: 'autores', books: 'libros', users: 'lectores', loans: 'préstamos' };
+
+      for (const t of BACKUP_TABLES) {
+        const ids = new Set();
+        for (const row of data[t]) {
+          if (!row || typeof row !== 'object' || !isInt(row.id)) return `hay ${names[t]} sin número de registro válido.`;
+          if (ids.has(row.id)) return `hay ${names[t]} con el número de registro repetido (#${row.id}).`;
+          ids.add(row.id);
+        }
+      }
+
+      const categoryIds = new Set(data.categories.map(c => c.id));
+      const authorIds = new Set(data.authors.map(a => a.id));
+      const bookIds = new Set(data.books.map(b => b.id));
+      const userIds = new Set(data.users.map(u => u.id));
+
+      for (const c of data.categories) {
+        if (!isText(c.name)) return `la categoría #${c.id} no tiene nombre.`;
+      }
+
+      const authorCodes = new Set();
+      for (const a of data.authors) {
+        if (!isText(a.name) || !isText(a.nationality)) return `al autor #${a.id} le falta el nombre o la nacionalidad.`;
+        if (!isValidAuthorCode(String(a.author_code ?? ''))) return `el autor #${a.id} tiene un código no válido.`;
+        const code = String(a.author_code).replace(/-/g, '').toUpperCase();
+        if (authorCodes.has(code)) return `hay dos autores con el mismo código (${a.author_code}).`;
+        authorCodes.add(code);
+      }
+
+      const isbns = new Set();
+      for (const b of data.books) {
+        if (!isText(b.title) || !isText(b.isbn)) return `al libro #${b.id} le falta el título o el ISBN.`;
+        if (!Number.isInteger(b.publication_year)) return `el libro #${b.id} no tiene un año válido.`;
+        if (!isBool(b.is_available) || !isBool(b.is_deleted)) return `el libro #${b.id} no tiene un estado válido.`;
+        if (!authorIds.has(b.author_id)) return `el libro #${b.id} apunta a un autor que no existe.`;
+        if (!categoryIds.has(b.category_id)) return `el libro #${b.id} apunta a una categoría que no existe.`;
+        const isbn = cleanIsbnString(b.isbn);
+        if (isbns.has(isbn)) return `hay dos libros con el mismo ISBN (${b.isbn}).`;
+        isbns.add(isbn);
+      }
+
+      const documents = new Set();
+      for (const u of data.users) {
+        if (!isText(u.full_name) || !isText(u.document_number) || !isText(u.phone)) return `al lector #${u.id} le faltan datos.`;
+        if (!isBool(u.is_active)) return `el lector #${u.id} no tiene un estado válido.`;
+        if (documents.has(u.document_number)) return `hay dos lectores con el mismo documento (${u.document_number}).`;
+        documents.add(u.document_number);
+      }
+
+      const booksOnLoan = new Set();
+      for (const l of data.loans) {
+        if (!bookIds.has(l.book_id)) return `el préstamo #${l.id} apunta a un libro que no existe.`;
+        if (!userIds.has(l.user_id)) return `el préstamo #${l.id} apunta a un lector que no existe.`;
+        if (!LOAN_STATUSES.includes(l.status)) return `el préstamo #${l.id} tiene un estado desconocido.`;
+        if (!ISO_DATE.test(String(l.loan_date)) || !ISO_DATE.test(String(l.due_date))) return `el préstamo #${l.id} tiene fechas no válidas.`;
+        if (l.due_date < l.loan_date) return `en el préstamo #${l.id} la fecha límite es anterior a la fecha del préstamo.`;
+        if (l.status === 'ACTIVE') {
+          if (booksOnLoan.has(l.book_id)) return `el libro #${l.book_id} aparece prestado dos veces al mismo tiempo.`;
+          booksOnLoan.add(l.book_id);
+        }
+      }
+
+      // La disponibilidad de cada libro debe coincidir con sus préstamos en curso
+      for (const b of data.books) {
+        if (b.is_available === booksOnLoan.has(b.id)) {
+          return b.is_available
+            ? `el libro #${b.id} figura disponible pero tiene un préstamo en curso.`
+            : `el libro #${b.id} figura prestado pero no tiene ningún préstamo en curso.`;
+        }
+      }
+      return null;
+    }
+
+    function importDataBackup(event) {
+      const input = event.target;
+      const file = input.files && input.files[0];
+      input.value = '';   // permite volver a elegir el mismo archivo
+      if (!file) return;
+
+      if (file.size > BACKUP_MAX_BYTES) {
+        notify("El archivo es demasiado grande para ser una copia de seguridad (máximo 5 MB).", "error");
+        return;
+      }
+
+      const reader = new FileReader();
+      reader.onerror = () => notify("No fue posible leer el archivo seleccionado.", "error");
+      reader.onload = () => {
+        let data;
+        try {
+          data = JSON.parse(reader.result);
+        } catch (e) {
+          notify("El archivo no es una copia de seguridad válida: no tiene formato JSON.", "error");
+          return;
+        }
+
+        const problem = validateBackupData(data);
+        if (problem) {
+          notify(`El archivo no es una copia de seguridad válida: ${problem}`, "error");
+          return;
+        }
+
+        const summary = `${data.books.length} libros, ${data.authors.length} autores, ${data.users.length} lectores y ${data.loans.length} préstamos`;
+        if (!confirm(`¿Cargar la copia de seguridad?\nContiene ${summary}.\nLa información actual será reemplazada.`)) return;
+
+        const restored = {};
+        BACKUP_TABLES.forEach(t => restored[t] = data[t]);
+        // Mismo ajuste que al abrir la aplicación: libros sin fecha toman el 1 de enero de su año
+        restored.books.forEach(b => {
+          if (!b.publication_date && b.publication_year) {
+            b.publication_date = `${String(b.publication_year).padStart(4, '0')}-01-01`;
+          }
+        });
+        db = restored;
+        saveDatabase(db);
+        notify(`Copia de seguridad cargada: ${summary}.`);
+        refreshUI();
+      };
+      reader.readAsText(file, 'utf-8');
+    }
+
+    function resetToDefaultData() {
+      if (!confirm("¿Borrar la información actual y cargar los datos de ejemplo iniciales?")) return;
+      db = cloneSeed();
+      saveDatabase(db);
+      notify("Se cargaron los datos de ejemplo iniciales.");
+      refreshUI();
+    }
+
+    // =====================================================================
     // AVISOS EMERGENTES
     // =====================================================================
     function notify(message, type = 'success') {
@@ -2307,7 +2545,8 @@
       books: "Catálogo de Libros",
       users: "Lectores",
       authors: "Autores",
-      categories: "Categorías Temáticas"
+      categories: "Categorías Temáticas",
+      backup: "Copia de Seguridad"
     };
 
     function switchView(viewKey) {
