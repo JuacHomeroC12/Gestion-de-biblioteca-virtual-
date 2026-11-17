@@ -52,6 +52,7 @@ La documentación técnica se encuentra completamente modularizada en formato Ma
 Gestion-de-biblioteca-virtual-/
 │
 ├── README.md                                          <-- Portal principal del proyecto y reglas de gobierno
+├── sistema_biblioteca.html                            <-- Fase 5: Prototipo navegable (copia idéntica de docs/prototipo/index.html)
 ├── docker-compose.yml                                 <-- Contenedor MySQL 8.0 con carga automática de schema.sql
 ├── .env.example                                       <-- Plantilla de variables de entorno para Docker Compose
 ├── .gitignore                                         <-- Filtro de archivos no rastreables
@@ -60,17 +61,15 @@ Gestion-de-biblioteca-virtual-/
 │   └── schema.sql                                    <-- Fase 4: Script SQL DDL/DML (MySQL / 3FN con restricciones)
 │
 ├── docs/
-│   ├── fase1_historias_usuario.md                    <-- Fase 1: Épicas, Historias (HU-01 a HU-13), Gherkin y MoSCoW
+│   ├── fase1_historias_usuario.md                    <-- Fase 1: Épicas, Historias (HU-01 a HU-14), Gherkin y MoSCoW
 │   ├── fase2_especificacion_requerimientos_ieee830.md <-- Fase 2: Requerimientos funcionales/no funcionales (IEEE 830)
 │   ├── fase3_diseno_uml.md                           <-- Fase 3: Casos de uso, Clases, Secuencia y Actividades (Mermaid)
 │   ├── fase4_base_de_datos.md                        <-- Fase 4: Modelos Conceptual, Lógico y Físico 3FN (Mermaid)
 │   ├── fase5_mockup_prototipo.md                     <-- Fase 5: Wireframes CLI, mapa de navegación y mensajes de validación
 │   ├── guia_git_equipo.md                            <-- Guía de colaboración Git y comandos para los aprendices
 │   │
-│   └── pdf/                                          <-- Respaldo histórico de entregas iniciales
-│       ├── Fase1_Historias_Usuario.pdf
-│       ├── Fase2_Requerimientos_Sistema_Biblioteca_Digital.pdf
-│       └── Fase3_Sistema_Biblioteca_Digital.pdf
+│   └── prototipo/
+│       └── index.html                                <-- Fase 5: Prototipo navegable en HTML (abrir en el navegador)
 ```
 
 ### 🔗 Enlaces Rápidos a la Documentación
@@ -79,6 +78,7 @@ Gestion-de-biblioteca-virtual-/
 - 📊 [**Fase 3: Diseño y Modelado UML (Diagramas Mermaid)**](docs/fase3_diseno_uml.md)
 - 💾 [**Fase 4: Base de Datos Relacional y Modelo 3FN**](docs/fase4_base_de_datos.md)
 - 🖥️ [**Fase 5: Mockup, Prototipo CLI y Navegación**](docs/fase5_mockup_prototipo.md)
+- 🌐 [**Fase 5: Prototipo Navegable en HTML (docs/prototipo/index.html)**](docs/prototipo/index.html)
 - 🗄️ [**Script SQL Ejecutable (database/schema.sql)**](database/schema.sql)
 - 🛠️ [**Guía de Trabajo Colaborativo en Git**](docs/guia_git_equipo.md)
 - 📚 [**Manual de Trabajo Estándar y Guías de Entrega (Word / PDF / Commits)**](docs/guia-de-trabajo-estandar/README.md)
@@ -98,7 +98,7 @@ Para mantener el rigor metodológico exigido por el SENA, evitar conflictos y fa
 - 📄 [**Estándar Visual de Formato Word y PDF (Arial 11, 1.5, Márgenes)**](docs/guia-de-trabajo-estandar/02_guia_desarrollo_word_y_pdf/README.md)
 - 🏛️ [**Plantilla Oficial de Portada SENA para Copiar a Word**](docs/guia-de-trabajo-estandar/03_plantillas_y_recursos/portada_oficial_sena.md)
 - 🤖 [**Prompts de Apoyo para Inteligencia Artificial (ChatGPT/Claude/Gemini)**](docs/guia-de-trabajo-estandar/03_plantillas_y_recursos/prompts_de_apoyo_para_ia.md)
-- 👥 [**Distribución de Fases y Metas de Co-Autoría Git (25% - 30%)**](docs/guia-de-trabajo-estandar/04_matriz_fases_y_responsables/distribucion_de_fases.md)
+- 👥 [**Distribución de Fases y Responsables**](docs/guia-de-trabajo-estandar/04_matriz_fases_y_responsables/distribucion_de_fases.md)
 
 ---
 *Centro de la Industria, la Empresa y los Servicios (CIES) — Regional Huila*
