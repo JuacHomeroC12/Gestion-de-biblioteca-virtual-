@@ -18,7 +18,7 @@ El presente documento tiene como objetivo formalizar y especificar detalladament
 El sistema a desarrollar se denomina **Sistema de Biblioteca Digital (MVP)**. Su función principal consiste en centralizar la administración del inventario bibliográfico, el padrón de usuarios y el control de préstamos y devoluciones. 
 
 - **Alcance Incluido (MVP):** Registro y consulta de libros y autores, administración de usuarios, control de disponibilidad en tiempo real, emisión de préstamos, recepción de devoluciones y actualización/baja de registros (RF-01 a RF-08).
-- **Límites y Exclusiones Formales (Won't Have):** El sistema no contempla pasarelas de pago, autenticación por contraseñas/roles (Login), integración con lectores ópticos de códigos de barras ni despacho automatizado de correos electrónicos.
+- **Límites y Exclusiones Formales (Won't Have):** El sistema no contempla pasarelas de pago, autenticación por contraseñas/roles (Login), integración con lectores ópticos de códigos de barras, despacho automatizado de correos electrónicos ni gestión de múltiples ejemplares por ISBN.
 
 ### 1.3. Definiciones, Acrónimos y Abreviaturas
 - **MVP (Minimum Viable Product):** Versión funcional inicial que satisface las necesidades operativas esenciales del negocio.
@@ -26,7 +26,8 @@ El sistema a desarrollar se denomina **Sistema de Biblioteca Digital (MVP)**. Su
 - **POO:** Programación Orientada a Objetos.
 - **ArrayList:** Estructura de datos dinámica en Java para gestión de colecciones en memoria principal.
 - **ISBN (International Standard Book Number):** Identificador comercial único de libros.
-- **ORCID / ISNI:** Códigos estandarizados internacionales para la identificación unívoca de autores e investigadores.
+- **ORCID (Open Researcher and Contributor ID):** Identificador único internacional para autores e investigadores.
+- **ISNI (International Standard Name Identifier):** Identificador estándar para distinguir nombres de personas o entidades creadoras.
 - **Trazabilidad:** Correspondencia bidireccional demostrable entre historias de usuario, requerimientos y componentes de software.
 
 ### 1.4. Referencias Normativas
@@ -58,8 +59,13 @@ El software es un sistema autónomo, modular y desacoplado, diseñado para ejecu
 - **RS-01 (Plataforma y Almacenamiento):** Desarrollado exclusivamente en lenguaje **Java**, gestionando colecciones en memoria (`ArrayList`) sin dependencia de motores de bases de datos relacionales en esta versión.
 - **RS-02 (Interfaz Operativa):** Ejecución confinada a la **consola de comandos (CLI)** estructurada en menús numéricos interactivos.
 - **RS-03 (Concurrencia):** Operación monousuario secuencial; el sistema asume un único operador en la estación de trabajo.
-- **RS-04 (Correspondencia Unívoca de Inventario):** Para el alcance del MVP, se establece una relación unívoca 1:1 entre el registro bibliográfico catalogado (`Libro`/`ISBN`) y el ejemplar físico en anaquel. Cada registro representa un único ejemplar físico en existencia. La administración de múltiples volúmenes o copias físicas asociadas a un mismo ISBN se delega a iteraciones posteriores (HU-13).
-- **RS-05 (Catálogo Maestro de Categorías):** Las categorías temáticas (Novela, Ficción, Ensayo, Poesía, Ciencia, Tecnología, Historia) forman parte de un catálogo clasificador predeterminado en el sistema. En el MVP se gestionan como atributo de clasificación textual o catálogo maestro pre-sembrado en base de datos, sin requerir una interfaz CRUD transaccional independiente para mantener el foco en el flujo operativo esencial del bibliotecario.
+- **RS-04 (Correspondencia Unívoca de Inventario):** Para el alcance del MVP, se establece una relación unívoca 1:1 entre el registro bibliográfico catalogado (`Libro`/`ISBN`) y el ejemplar físico en anaquel. Cada registro representa un único ejemplar físico en existencia. La administración de múltiples volúmenes o copias físicas asociadas a un mismo ISBN se delega a iteraciones posteriores (HU-14).
+- **RS-05 (Catálogo Maestro de Categorías):** Las categorías temáticas (Novela y Ficción, Ciencia y Tecnología, Historia y Filosofía) forman parte de un catálogo clasificador predeterminado en el sistema. En el MVP se gestionan como atributo de clasificación textual o catálogo maestro pre-sembrado en base de datos, sin requerir una interfaz CRUD transaccional independiente para mantener el foco en el flujo operativo esencial del bibliotecario.
+
+### 2.5. Suposiciones y Dependencias
+- Se asume que el sistema es operado por un único bibliotecario a la vez, sin acceso concurrente de varios usuarios (RS-03).
+- El sistema no depende de servicios, APIs ni sistemas externos para su funcionamiento.
+- El listado consolidado de préstamos activos (HU-09) y las penalizaciones por retraso (HU-10) quedan fuera del alcance del MVP y se documentan como trabajo futuro en la Fase 1.
 
 ---
 
@@ -85,6 +91,7 @@ El software es un sistema autónomo, modular y desacoplado, diseñado para ejecu
   - *Campo Obligatorio Vacío:* Si se omite algún dato, el sistema emite `"Campo obligatorio"` y solicita nuevamente el ingreso.
   - *ISBN Duplicado:* Si el ISBN ya existe, el sistema bloquea el guardado con `"Registro ISBN existente"`.
   - *Autor Inexistente:* Si el código de autor no existe, el sistema advierte `"Autor no registrado en el sistema"`.
+- **Postcondiciones:** El libro queda registrado en el catálogo con estado `"Disponible"`, listo para consulta y préstamo inmediato.
 
 ---
 
@@ -101,6 +108,7 @@ El software es un sistema autónomo, modular y desacoplado, diseñado para ejecu
 - **Flujos de Excepción:**
   - *Identificación Insuficiente:* Si falta el identificador o el nombre, emite `"Identificación mínima insuficiente"`.
   - *Identificador Duplicado:* Si el identificador ya existe, emite `"Este identificador ya se encuentra registrado para otro autor"`.
+- **Postcondiciones:** El autor queda registrado y disponible para asociarse a libros del catálogo.
 
 ---
 
@@ -118,6 +126,7 @@ El software es un sistema autónomo, modular y desacoplado, diseñado para ejecu
 - **Flujos de Excepción:**
   - *Campo Obligatorio Vacío:* Si algún dato queda en blanco, el sistema notifica `"Campo obligatorio"`.
   - *Documento Duplicado:* Si el documento ya se encuentra registrado, emite `"Este documento ya se encuentra registrado"`.
+- **Postcondiciones:** El usuario queda registrado con estado `"Activo"` y habilitado para solicitar préstamos.
 
 ---
 
@@ -133,6 +142,7 @@ El software es un sistema autónomo, modular y desacoplado, diseñado para ejecu
   - *Ejemplar Prestado:* Si el libro tiene `disponible == false`, el sistema indica `"No disponible (En Préstamo)"` y despliega la fecha estimada de retorno.
 - **Flujos de Excepción:**
   - *Libro Inexistente:* Si no se encuentra coincidencia, el sistema emite `"Libro no encontrado en el inventario"`.
+- **Postcondiciones:** El bibliotecario conoce el estado actual del ejemplar y puede decidir si procede con un préstamo.
 
 ---
 
@@ -153,6 +163,7 @@ El software es un sistema autónomo, modular y desacoplado, diseñado para ejecu
   - *Usuario Inhabilitado:* Si el usuario existe pero tiene `activo == false`, el sistema bloquea el préstamo con `"Usuario no habilitado para préstamos. Estado actual: INACTIVO"`.
   - *Libro No Encontrado:* Si el ID ingresado no corresponde a ningún libro del catálogo o ha sido dado de baja lógica (`is_deleted == true`), el sistema emite `"Libro no encontrado en el catálogo activo"`.
   - *Libro Prestado:* Si el libro ya está prestado (`disponible == false`), emite `"El libro seleccionado no cuenta con existencias disponibles para préstamo"`. A nivel de base de datos relacional, esta regla está blindada por la restricción de unicidad física `uk_loans_active_book` que impide registrar más de un préstamo activo del mismo libro simultáneamente.
+- **Postcondiciones:** El libro queda en estado `"No disponible"`, con fecha límite registrada y vinculado al usuario que lo recibió.
 
 ---
 
@@ -170,6 +181,7 @@ El software es un sistema autónomo, modular y desacoplado, diseñado para ejecu
   - *Devolución Tardía:* Si la fecha actual es posterior a la fecha límite acordada, el sistema cierra el préstamo, restablece el libro a `"Disponible"` y emite la alerta visual `"Devolución registrada con retraso"`.
 - **Flujos de Excepción:**
   - *Préstamo No Encontrado:* Si no hay préstamo activo para el libro, muestra `"No existe un préstamo activo para este libro"`.
+- **Postcondiciones:** El libro queda con estado `"Disponible"` y el préstamo se marca como cerrado, con o sin advertencia de retraso.
 
 ---
 
@@ -183,6 +195,7 @@ El software es un sistema autónomo, modular y desacoplado, diseñado para ejecu
   3. El sistema imprime en pantalla la lista detallada de libros encontrados.
 - **Flujos de Excepción:**
   - *Sin Coincidencias:* Si no hay resultados que coincidan con el término, el sistema emite `"No encontrado"`.
+- **Postcondiciones:** El bibliotecario obtiene la lista de libros coincidentes o una notificación de que no existen resultados.
 
 ---
 
@@ -200,6 +213,8 @@ El software es un sistema autónomo, modular y desacoplado, diseñado para ejecu
   3. El sistema ejecuta una **baja lógica** (`UPDATE books SET is_deleted = true`) y confirma `"Libro dado de baja del catálogo"`. El registro se conserva en base de datos para auditoría de historial de préstamos.
 - **Flujos de Excepción:**
   - *Eliminación Denegada por Préstamo Vigente:* Si el libro tiene `disponible == false`, el sistema cancela la operación con la alerta `"No se puede eliminar un libro que tiene un préstamo activo"`.
+  - *Campo Obligatorio Vacío al Editar:* Si el bibliotecario borra un campo obligatorio (por ejemplo, el título) e intenta guardar, el sistema rechaza la actualización con `"Campo obligatorio"`.
+- **Postcondiciones:** El libro queda actualizado con la nueva información, o dado de baja lógica (`is_deleted = true`) del catálogo activo si no tenía préstamo activo, conservando su historial de préstamos.
 
 ---
 
@@ -239,4 +254,4 @@ Esta matriz asegura una correspondencia matemática y exhaustiva entre el análi
 | **HU-05 (Prestar Libros)** | RF-05 | RN-04 | CA-1, CA-2, CA-3 | RNF-01, RNF-02 |
 | **HU-06 (Registrar Devoluciones)** | RF-06 | — | CA-1, CA-2, CA-3 | RNF-01, RNF-03 |
 | **HU-07 (Buscar Libros)** | RF-07 | — | CA-1, CA-2 | RNF-03, RNF-04 |
-| **HU-08 (Editar y Eliminar)** | RF-08 | RN-05 | CA-1, CA-2, CA-3 | RNF-01, RNF-02 |
+| **HU-08 (Editar y Eliminar)** | RF-08 | RN-05 | CA-1, CA-2, CA-3, CA-4 | RNF-01, RNF-02 |
