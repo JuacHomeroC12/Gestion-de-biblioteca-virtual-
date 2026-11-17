@@ -107,7 +107,7 @@ Para satisfacer la solicitud expresa del instructor Carlos Julio Cadena (*tablas
 | :--- | :--- | :--- | :--- |
 | **`Categoria`** | `categories` | `nombre` ➔ `name`<br>`descripcion` ➔ `description` | Nomenclatura en plural y campos descriptivos en inglés. |
 | **`Autor`** | `authors` | `identificador` ➔ `author_code`<br>`nombre` ➔ `name`<br>`nacionalidad` ➔ `nationality` | Soporte para identificadores internacionales (ISNI/ORCID). |
-| **`Libro`** | `books` | `titulo` ➔ `title`<br>`isbn` ➔ `isbn`<br>`anioPublicacion` ➔ `publication_year`<br>`disponible` ➔ `is_available`<br>*Baja Lógica* ➔ `is_deleted` | Modelo físico de ejemplares individuales (RS-04) con soporte para baja lógica. |
+| **`Libro`** | `books` | `titulo` ➔ `title`<br>`isbn` ➔ `isbn`<br>`anioPublicacion` ➔ `publication_year`<br>`disponible` ➔ `is_available`<br>`eliminado` ➔ `is_deleted` | Modelo físico de ejemplares individuales (RS-04) con soporte para baja lógica. |
 | **`Usuario`** | `users` | `documentoIdentidad` ➔ `document_number`<br>`nombre` ➔ `full_name`<br>`telefono` ➔ `phone`<br>`activo` ➔ `is_active` | Padrón de usuarios habilitados y validados unívocamente. |
 | **`Prestamo`** | `loans` | `fechaPrestamo` ➔ `loan_date`<br>`fechaLimiteDevolucion` ➔ `due_date`<br>`fechaDevolucion` ➔ `return_date`<br>`estado` ➔ `status` | Registro transaccional auditado con columna virtual única de control. |
 
@@ -276,6 +276,28 @@ erDiagram
 | **RN-05 (Integridad)** | Unicidad de Préstamo Activo | Restricción física `CONSTRAINT uk_loans_active_book UNIQUE (active_book_id)` que impide registrar dos préstamos activos del mismo libro simultáneamente. |
 | **RN-05 (Baja Lógica)** | Integridad de Historial de Préstamos | La eliminación se implementa como `UPDATE books SET is_deleted = TRUE`. La FK `fk_loans_books ON DELETE RESTRICT` se mantiene para preservar el historial de préstamos en `loans`. |
 
+### 6.1. Validación de Formatos de Dominio en el Motor (restricciones `CHECK`)
+
+Además de la validación en la interfaz, el propio motor rechaza datos con formato inválido (MySQL 8.0.16+ / MariaDB 10.4+ aplican las restricciones `CHECK`):
+
+| Restricción | Campo | Regla aplicada | Ejemplo rechazado |
+| :--- | :--- | :--- | :--- |
+| `chk_books_isbn` | `books.isbn` | ISBN-10 (9 dígitos + dígito o `X`) o ISBN-13 (13 dígitos); se ignoran guiones y espacios. | `'hola'`, `'123'` |
+| `chk_books_title` | `books.title` | Mínimo 3 caracteres sin contar espacios en los extremos. | `'Ab'` |
+| `chk_books_year` | `books.publication_year` | Entre 1000 y 2100. | `999` |
+| `chk_authors_code` | `authors.author_code` | ISNI / ORCID de 16 caracteres en bloques de 4 (`0000-0000-0000-000X`). | `'abc'` |
+| `chk_authors_name` | `authors.name` | Mínimo 3 caracteres. | `'Jo'` |
+| `chk_users_document` | `users.document_number` | Solo dígitos, entre 6 y 15. | `'1'`, `'x'` |
+| `chk_users_phone` | `users.phone` | Exactamente 10 dígitos numéricos. | `'31A'` |
+| `chk_users_name` | `users.full_name` | Mínimo 3 caracteres. | `'Al'` |
+| `chk_categories_name` | `categories.name` | Mínimo 3 caracteres. | `'TI'` |
+| `chk_loans_due_date` | `loans.due_date` | La fecha límite no puede ser anterior a la fecha del préstamo. | `due_date < loan_date` |
+| `chk_loans_return_date` | `loans.return_date` | Si existe, no puede ser anterior a la fecha del préstamo. | `return_date < loan_date` |
+
+### 6.2. Codificación y Ortografía de los Datos
+
+El script se guarda en UTF-8 y abre la conexión con `SET NAMES utf8mb4`. Por eso los datos semilla y los comentarios usan ortografía completa en español (por ejemplo, `'Cien años de soledad'`, `'El amor en los tiempos del cólera'`, `'Española'`), idéntica a la que muestran el prototipo y las pantallas de consola.
+
 ### 📌 Justificación Arquitectónica del Estado `OVERDUE`:
 En el esquema de base de datos se mantiene el estado `'OVERDUE'` dentro del `CONSTRAINT chk_loans_status CHECK (status IN ('ACTIVE', 'RETURNED', 'OVERDUE'))` por los siguientes motivos de diseño:
 1. **Doble modalidad de cálculo:** En las operaciones del día a día, la condición de mora se evalúa dinámicamente en consultas (`CURRENT_DATE > due_date`).
@@ -337,3 +359,14 @@ FROM users
 WHERE is_active = TRUE
   AND (full_name LIKE '%David%' OR document_number LIKE '%1075%');
 ```
+
+### 8.3. Búsqueda Asistida de Autores (comodín `?` de la consola):
+Respalda la búsqueda guiada del formulario de registro de libros, de modo que el bibliotecario no tenga que digitar de memoria el código ISNI:
+```sql
+SELECT id, author_code, name, nationality
+FROM authors
+WHERE name LIKE '%García%' OR author_code LIKE '0000-0001%'
+ORDER BY name ASC;
+```
+
+> **Nota de rendimiento:** un patrón con comodín inicial (`'%texto%'`) no aprovecha el índice B-Tree `idx_books_title`. Para catálogos grandes, la aplicación usa primero la búsqueda por prefijo (`'texto%'`), que sí usa el índice, y recurre a la búsqueda por contenido solo si no hay resultados.
