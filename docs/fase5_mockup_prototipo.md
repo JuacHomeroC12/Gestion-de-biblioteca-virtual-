@@ -498,10 +498,9 @@ flowchart TB
 
 ## 10. Prototipo Navegable en HTML (Validación Visual de Flujos)
 
-Además de los wireframes de consola, el repositorio incluye un **prototipo navegable** que se abre directamente en el navegador, sin servidor ni instalación:
+Además de los wireframes de consola, el repositorio incluye **propuestas de prototipo navegable** que se abren directamente en el navegador, sin servidor ni instalación. Están en [`docs/propuestas-prototipo/`](propuestas-prototipo/README.md), con una carpeta por integrante para revisarlas en equipo una por una.
 
-- [`docs/prototipo/index.html`](prototipo/index.html) — copia de referencia del prototipo.
-- [`sistema_biblioteca.html`](../sistema_biblioteca.html) — la misma página en la raíz del repositorio (ambos archivos deben mantenerse idénticos).
+Esta sección describe la propuesta vigente: [`juan-diego-oteca/index.html`](propuestas-prototipo/juan-diego-oteca/index.html).
 
 > [!NOTE]
 > El prototipo **no reemplaza la consola (RS-02)**: sirve para validar con el instructor los flujos, las reglas de negocio y los mensajes antes de programar la CLI en Java. Opera para el único rol **Bibliotecario** (sin login, HU-12) y guarda los datos en el `localStorage` del navegador; no se conecta a MySQL. Sus datos de ejemplo se basan en los datos semilla de [`database/schema.sql`](../database/schema.sql) y usa los mismos nombres de campo en inglés de la Fase 4 (`is_available`, `is_deleted`, `status`, etc.).

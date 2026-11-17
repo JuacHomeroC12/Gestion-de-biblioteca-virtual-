@@ -52,7 +52,6 @@ La documentación técnica se encuentra completamente modularizada en formato Ma
 Gestion-de-biblioteca-virtual-/
 │
 ├── README.md                                          <-- Portal principal del proyecto y reglas de gobierno
-├── sistema_biblioteca.html                            <-- Fase 5: Prototipo navegable (copia idéntica de docs/prototipo/index.html)
 ├── docker-compose.yml                                 <-- Contenedor MySQL 8.0 con carga automática de schema.sql
 ├── .env.example                                       <-- Plantilla de variables de entorno para Docker Compose
 ├── .gitignore                                         <-- Filtro de archivos no rastreables
@@ -68,8 +67,12 @@ Gestion-de-biblioteca-virtual-/
 │   ├── fase5_mockup_prototipo.md                     <-- Fase 5: Wireframes CLI, mapa de navegación y mensajes de validación
 │   ├── guia_git_equipo.md                            <-- Guía de colaboración Git y comandos para los aprendices
 │   │
-│   └── prototipo/
-│       └── index.html                                <-- Fase 5: Prototipo navegable en HTML (abrir en el navegador)
+│   └── propuestas-prototipo/                         <-- Fase 5: Propuestas del prototipo navegable en HTML, una por integrante
+│       ├── README.md
+│       ├── juan-david-romero/
+│       ├── juan-diego-oteca/
+│       │   └── index.html
+│       └── jhojan-melo/
 ```
 
 ### 🔗 Enlaces Rápidos a la Documentación
@@ -78,7 +81,7 @@ Gestion-de-biblioteca-virtual-/
 - 📊 [**Fase 3: Diseño y Modelado UML (Diagramas Mermaid)**](docs/fase3_diseno_uml.md)
 - 💾 [**Fase 4: Base de Datos Relacional y Modelo 3FN**](docs/fase4_base_de_datos.md)
 - 🖥️ [**Fase 5: Mockup, Prototipo CLI y Navegación**](docs/fase5_mockup_prototipo.md)
-- 🌐 [**Fase 5: Prototipo Navegable en HTML (docs/prototipo/index.html)**](docs/prototipo/index.html)
+- 🌐 [**Fase 5: Propuestas del Prototipo Navegable en HTML**](docs/propuestas-prototipo/README.md)
 - 🗄️ [**Script SQL Ejecutable (database/schema.sql)**](database/schema.sql)
 - 🛠️ [**Guía de Trabajo Colaborativo en Git**](docs/guia_git_equipo.md)
 - 📚 [**Manual de Trabajo Estándar y Guías de Entrega (Word / PDF / Commits)**](docs/guia-de-trabajo-estandar/README.md)

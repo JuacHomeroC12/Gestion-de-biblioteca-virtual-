@@ -19,7 +19,7 @@ Para subsanar esta observación ante el instructor Carlos Julio Cadena y asegura
 | **Fase 1** | `docs/fase1_historias_usuario.md` | **Juan Diego Oteca ("Juaco")** | Homologar y actualizar la versión en PDF con la nueva portada e índice estándar. | `docs/fase1-pdf-oteca` |
 | **Fase 2** | `docs/fase2_especificacion_requerimientos_ieee830.md` | **Jhojan Javier Melo ("Melo")** | Homologar y maquetar en Word la especificación IEEE 830, exportar a PDF y hacer push. | `docs/fase2-pdf-melo` |
 | **Fase 3** | `docs/fase3_diseno_uml.md` | **Jhojan Javier Melo ("Melo")** | Exportar diagramas UML en alta definición, generar PDF con portada estándar y hacer push. | `docs/fase3-pdf-melo` |
-| **Fase 5** *(En curso)* | `docs/fase5_mockup_prototipo.md`<br>`docs/prototipo/index.html` | **Todo el equipo** | Desarrollo colaborativo: Vistas HTML/Figma (Juaco y Melo) + Integración y Documento técnico (Juan David). | `feat/fase5-prototipo-...` |
+| **Fase 5** *(En curso)* | `docs/fase5_mockup_prototipo.md`<br>`docs/propuestas-prototipo/` | **Todo el equipo** | Desarrollo colaborativo: Vistas HTML/Figma (Juaco y Melo) + Integración y Documento técnico (Juan David). | `feat/fase5-prototipo-...` |
 
 ---
 
