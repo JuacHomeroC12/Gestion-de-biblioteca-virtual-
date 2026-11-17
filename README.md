@@ -39,7 +39,7 @@ El primer incremento funcional se enfoca exclusivamente en las historias de usua
 - **HU-04:** Consultar Disponibilidad de libros en tiempo real.
 - **HU-05:** Prestar Libros a usuarios activos en el sistema.
 - **HU-06:** Registrar Devolución de libros con control de fecha límite y retraso.
-- **HU-07:** Buscar Libros por coincidencia en título o autor.
+- **HU-07:** Buscar Libros por coincidencia en título, autor o ISBN.
 - **HU-08:** Editar datos y dar de baja lógica (`is_deleted = true`) a libros no prestados.
 
 ---
