@@ -1,5 +1,5 @@
 # 👥 DISTRIBUCIÓN DE FASES Y NIVELACIÓN DE APORTES EN GIT
-## Módulo 04 — Asignación de Responsabilidades y Metas de Evaluación
+## Módulo 04 — Asignación de Responsabilidades
 
 En la evaluación oficial de Fase 4 (2026-10-26), el instructor técnico emitió la siguiente observación prioritaria:
 
@@ -23,23 +23,7 @@ Para subsanar esta observación ante el instructor Carlos Julio Cadena y asegura
 
 ---
 
-## 📊 2. Meta de Participación por Integrante
-
-Al completar la subida de los PDFs y arrancar la Fase 5, la distribución de commits en GitHub (`Insights -> Contributors`) debe quedar equilibrada de la siguiente manera:
-
-```text
-┌────────────────────────────────────────────────────────┐
-│ META DE CO-AUTORÍA EVALUABLE SENA                      │
-├────────────────────────────────┬───────────────────────┤
-│ Juan David Romero Calderón     │ 35% - 40% del total   │
-│ Juan Diego Oteca Pedreros      │ 30% - 35% del total   │
-│ Jhojan Javier Melo Avella      │ 30% - 35% del total   │
-└────────────────────────────────┴───────────────────────┘
-```
-
----
-
-## 📝 3. Compromiso de Trabajo Individual
+## 📝 2. Compromiso de Trabajo Individual
 
 Para que los commits se contabilicen a favor de cada persona:
 1. **Cada aprendiz debe trabajar desde su propia máquina y terminal**.
