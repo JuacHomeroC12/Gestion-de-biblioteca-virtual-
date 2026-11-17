@@ -504,7 +504,7 @@ Además de los wireframes de consola, el repositorio incluye un **prototipo nave
 - [`sistema_biblioteca.html`](../sistema_biblioteca.html) — la misma página en la raíz del repositorio (ambos archivos deben mantenerse idénticos).
 
 > [!NOTE]
-> El prototipo **no reemplaza la consola (RS-02)**: sirve para validar con el instructor los flujos, las reglas de negocio y los mensajes antes de programar la CLI en Java. Opera para el único rol **Bibliotecario** (sin login, HU-12) y guarda los datos en el `localStorage` del navegador; no se conecta a MySQL. Sus datos de ejemplo son idénticos a los datos semilla de [`database/schema.sql`](../database/schema.sql) y usa los mismos nombres de campo en inglés de la Fase 4 (`is_available`, `is_deleted`, `status`, etc.).
+> El prototipo **no reemplaza la consola (RS-02)**: sirve para validar con el instructor los flujos, las reglas de negocio y los mensajes antes de programar la CLI en Java. Opera para el único rol **Bibliotecario** (sin login, HU-12) y guarda los datos en el `localStorage` del navegador; no se conecta a MySQL. Sus datos de ejemplo se basan en los datos semilla de [`database/schema.sql`](../database/schema.sql) y usa los mismos nombres de campo en inglés de la Fase 4 (`is_available`, `is_deleted`, `status`, etc.).
 
 ### 10.1. Correspondencia entre pantallas, historias y opciones de la consola
 
@@ -513,20 +513,40 @@ Además de los wireframes de consola, el repositorio incluye un **prototipo nave
 | Botón **Registrar Libro** (formulario con autor y categoría en listas) | HU-01 / RF-01 | `[1]` |
 | **Autores** → Registrar Autor | HU-02 / RF-02 | `[2]` |
 | **Lectores** → Registrar Usuario | HU-03 / RF-03 | `[3]` |
-| **Catálogo de Libros**: estado, y fecha límite cuando está prestado | HU-04 / RF-04 | `[4]` y `[8] > [3]` |
-| **Nuevo Préstamo** (búsqueda predictiva de lector y libro, plazo de 1 a 30 días, 14 por defecto) | HU-05 / RF-05 | `[8] > [1]` |
+| Botón **Consultar Disponibilidad** (ficha del ejemplar con fecha límite y lector responsable cuando está prestado) | HU-04 / RF-04 | `[4]` y `[8] > [3]` |
+| **Nuevo Préstamo** (búsqueda predictiva de lector y libro; plazo de 7 a 30 días, 14 por defecto) | HU-05 / RF-05 | `[8] > [1]` |
 | Botón **Devolver** en la tabla de préstamos | HU-06 / RF-06 | `[8] > [2]` |
 | Buscador del catálogo (título, autor o ISBN, sin distinguir tildes) | HU-07 / RF-07 | `[5]` |
-| **Editar** (solo título, autor y categoría) y **Dar de baja** (baja lógica) | HU-08 / RF-08 / RN-05 | `[6]` y `[7]` |
+| **Editar** y **Dar de baja** (baja lógica) | HU-08 / RF-08 / RN-05 | `[6]` y `[7]` |
 | **Panel de Control**, campana de notificaciones y filtros de préstamos | HU-09 / Obs 12 | `[9]` |
-| **Categorías** (solo lectura: catálogo maestro pre-sembrado) | RS-05 | — |
+| **Categorías** | RS-05 | — |
+| **Copia de Seguridad** (descargar, cargar y restablecer datos) | Obs 07 | — |
 
 ### 10.2. Reglas aplicadas en el prototipo
 
-- Los mensajes de éxito y error usan los textos de los criterios de aceptación de la Fase 1 y la Fase 2 (RNF-03).
-- Una devolución dentro del plazo cierra el préstamo con estado `RETURNED`; una devolución tardía lo cierra con el estado terminal `OVERDUE` (ver justificación en la Fase 4, sección 6).
-- El botón **Habilitar / Inhabilitar** de la vista Lectores existe solo para poder demostrar la regla RN-04 (préstamo rechazado a un usuario inactivo).
-- Quedan fuera del prototipo, por no estar en el alcance del MVP: la creación de categorías (RS-05), la renovación o extensión de préstamos y la restauración de libros dados de baja.
+- Los mensajes de éxito y error siguen los textos de los criterios de aceptación de la Fase 1 y la Fase 2 (RNF-03), y la interfaz no muestra códigos internos como `HU-XX` o `RN-XX` (Obs 13).
+- Los formularios validan en vivo el formato y la longitud de cada dato (ISBN con dígito de control, código de autor de 16 caracteres, documento de 6 a 15 dígitos y teléfono de 10 dígitos), igual que las restricciones `CHECK` de la Fase 4 (Obs 06).
+- El botón **Habilitar / Inhabilitar** de la vista Lectores permite demostrar la regla RN-04 (préstamo rechazado a un usuario inactivo).
+
+### 10.3. Copia de Seguridad (atención a la Obs 07)
+
+Como el prototipo guarda la información en el navegador, la vista **Copia de Seguridad** completa el ciclo de respaldo que pidió el instructor:
+
+| Acción | Qué hace |
+| :--- | :--- |
+| **Descargar copia** | Genera un archivo `copia_biblioteca_AAAA-MM-DD.json` con las 5 tablas (`categories`, `authors`, `books`, `users`, `loans`). |
+| **Cargar copia** | Lee un archivo `.json` (máximo 5 MB), lo valida y, si el bibliotecario confirma, reemplaza la información actual. |
+| **Restablecer** | Vuelve a cargar los datos de ejemplo iniciales del prototipo. |
+
+Antes de cargar una copia, el sistema verifica las mismas reglas de la base de datos y rechaza el archivo con un mensaje claro si encuentra algún problema:
+- Están las 5 tablas y cada registro tiene un número único.
+- Libros, autores y lectores tienen sus datos obligatorios.
+- No hay ISBN, códigos de autor ni documentos repetidos (RN-01, RN-02, RN-03).
+- Cada libro apunta a un autor y a una categoría existentes, y cada préstamo a un libro y un lector existentes (llaves foráneas).
+- Los préstamos tienen un estado válido (`ACTIVE`, `RETURNED`, `OVERDUE`) y una fecha límite que no es anterior a la fecha del préstamo.
+- Ningún libro aparece prestado dos veces al mismo tiempo (`uk_loans_active_book`), y su disponibilidad coincide con sus préstamos en curso.
+
+Si el archivo no pasa la validación, la información actual no se modifica.
 
 ---
 *Fin de la especificación técnica de prototipado y experiencia de usuario CLI — Ajustado según observaciones de auditoría técnica.*
