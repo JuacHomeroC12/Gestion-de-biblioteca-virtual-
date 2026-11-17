@@ -57,6 +57,9 @@ Gestion-de-biblioteca-virtual-/
 ├── .env.example                                       <-- Plantilla de variables de entorno para Docker Compose
 ├── .gitignore                                         <-- Filtro de archivos no rastreables
 │
+├── recursos/
+│   └── resumen_cambios_para_el_equipo.md             <-- Resumen de cambios y pendientes de revisión para el equipo
+│
 ├── database/
 │   └── schema.sql                                    <-- Fase 4: Script SQL DDL/DML (MySQL / 3FN con restricciones)
 │
