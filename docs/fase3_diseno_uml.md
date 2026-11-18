@@ -172,6 +172,7 @@ classDiagram
         -anioPublicacion: int
         -categoria: Categoria
         -disponible: boolean
+        -eliminado: boolean
         +Libro(id: int, titulo: String, isbn: String, autor: Autor, anioPublicacion: int, categoria: Categoria, disponible: boolean)
         +getId(): int
         +setId(id: int): void
@@ -187,6 +188,8 @@ classDiagram
         +setCategoria(categoria: Categoria): void
         +isDisponible(): boolean
         +setDisponible(disponible: boolean): void
+        +isEliminado(): boolean
+        +setEliminado(eliminado: boolean): void
         +toString(): String
     }
 
@@ -324,7 +327,11 @@ sequenceDiagram
     L -->> S: void
     
     S -->> V: true
-    V -->> B: Muestra "Devolución procesada y libro disponible"
+    alt Entrega dentro del plazo (fecha actual no supera la fecha límite)
+        V -->> B: Muestra "Devolución registrada a tiempo"
+    else Entrega fuera del plazo (fecha actual supera la fecha límite)
+        V -->> B: Muestra "Devolución registrada con retraso"
+    end
 ```
 
 ---
@@ -349,12 +356,13 @@ sequenceDiagram
     alt Libro Prestado (disponible == false)
         L -->> C: false (Prestado)
         C -->> V: false (Operación denegada por RN-05)
-        V -->> B: Alerta "No se puede eliminar un libro con préstamo activo"
+        V -->> B: Alerta "No se puede eliminar un libro que tiene un préstamo activo"
     else Libro Disponible (disponible == true)
         L -->> C: true (Disponible)
-        C ->> C: listaLibros.remove(l)
+        C ->> L: setEliminado(true)
+        Note over C,L: Baja lógica: el objeto permanece en listaLibros<br/>para conservar el historial de préstamos
         C -->> V: true
-        V -->> B: Muestra "Libro eliminado del catálogo exitosamente"
+        V -->> B: Muestra "Libro dado de baja del catálogo exitosamente"
     end
 ```
 
@@ -424,7 +432,7 @@ flowchart TD
     IngresaID --> BuscaPrestamo[Sistema busca Préstamo Activo]
     
     BuscaPrestamo --> ValPrestamo{¿Existe préstamo activo?}
-    ValPrestamo -- No --> ErrPrestamo[Muestra: 'Préstamo no encontrado o ya finalizado']
+    ValPrestamo -- No --> ErrPrestamo[Muestra: 'No existe un préstamo activo para este libro']
     ErrPrestamo --> FinErr([Fin con Error])
     
     ValPrestamo -- Sí --> CierraPrestamo[Marca préstamo como finalizado]
