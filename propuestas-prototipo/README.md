@@ -11,4 +11,4 @@ Cada integrante sube aquí su propuesta del prototipo HTML para revisarlas en eq
 ## Cómo subir una propuesta
 1. Guarde su prototipo como `index.html` dentro de su carpeta.
 2. Súbalo desde su propia rama (`feat/prototipo-<su-nombre>`) y abra un Pull Request hacia `develop`.
-3. Cada propuesta debe cumplir las historias de usuario HU-01 a HU-08 (Fase 1), los requisitos RF-01 a RF-08 (Fase 2) y las reglas descritas en la sección 10 de [`fase5_mockup_prototipo.md`](../fase5_mockup_prototipo.md).
+3. Cada propuesta debe cumplir las historias de usuario HU-01 a HU-08 (Fase 1), los requisitos RF-01 a RF-08 (Fase 2) y las reglas descritas en la sección 10 de [`fase5_mockup_prototipo.md`](../docs/fase5_mockup_prototipo.md).

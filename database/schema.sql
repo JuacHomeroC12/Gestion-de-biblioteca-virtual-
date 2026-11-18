@@ -217,7 +217,7 @@ WHERE l.status = 'ACTIVE'
 
 -- Las verificaciones 3a a 3c se ejecutan dentro de una transacción que se
 -- revierte al final (ROLLBACK), para que los datos semilla queden intactos
--- y coincidan con los del prototipo navegable (docs/propuestas-prototipo/).
+-- y coincidan con los del prototipo navegable (propuestas-prototipo/).
 START TRANSACTION;
 
 -- Verificación 3a: Baja lógica válida (libro 2 disponible, préstamo RETURNED)

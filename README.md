@@ -65,14 +65,14 @@ Gestion-de-biblioteca-virtual-/
 │   ├── fase3_diseno_uml.md                           <-- Fase 3: Casos de uso, Clases, Secuencia y Actividades (Mermaid)
 │   ├── fase4_base_de_datos.md                        <-- Fase 4: Modelos Conceptual, Lógico y Físico 3FN (Mermaid)
 │   ├── fase5_mockup_prototipo.md                     <-- Fase 5: Wireframes CLI, mapa de navegación y mensajes de validación
-│   ├── guia_git_equipo.md                            <-- Guía de colaboración Git y comandos para los aprendices
-│   │
-│   └── propuestas-prototipo/                         <-- Fase 5: Propuestas del prototipo navegable en HTML, una por integrante
-│       ├── README.md
-│       ├── juan-david-romero/
-│       ├── juan-diego-oteca/
-│       │   └── index.html
-│       └── jhojan-melo/
+│   └── guia_git_equipo.md                            <-- Guía de colaboración Git y comandos para los aprendices
+│
+└── propuestas-prototipo/                             <-- Propuestas del prototipo navegable en HTML, una carpeta por integrante
+    ├── README.md
+    ├── juan-david-romero/
+    ├── juan-diego-oteca/
+    │   └── index.html
+    └── jhojan-melo/
 ```
 
 ### 🔗 Enlaces Rápidos a la Documentación
@@ -81,7 +81,7 @@ Gestion-de-biblioteca-virtual-/
 - 📊 [**Fase 3: Diseño y Modelado UML (Diagramas Mermaid)**](docs/fase3_diseno_uml.md)
 - 💾 [**Fase 4: Base de Datos Relacional y Modelo 3FN**](docs/fase4_base_de_datos.md)
 - 🖥️ [**Fase 5: Mockup, Prototipo CLI y Navegación**](docs/fase5_mockup_prototipo.md)
-- 🌐 [**Fase 5: Propuestas del Prototipo Navegable en HTML**](docs/propuestas-prototipo/README.md)
+- 🌐 [**Propuestas del Prototipo Navegable en HTML (una por integrante)**](propuestas-prototipo/README.md)
 - 🗄️ [**Script SQL Ejecutable (database/schema.sql)**](database/schema.sql)
 - 🛠️ [**Guía de Trabajo Colaborativo en Git**](docs/guia_git_equipo.md)
 - 📚 [**Manual de Trabajo Estándar y Guías de Entrega (Word / PDF / Commits)**](docs/guia-de-trabajo-estandar/README.md)
