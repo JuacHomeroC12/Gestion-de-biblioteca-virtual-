@@ -88,9 +88,9 @@ Esta es la vista raíz que recibe al bibliotecario al iniciar la aplicación:
           SISTEMA DE GESTIÓN DE BIBLIOTECA DIGITAL — CIES NEIVA
                              (MVP - VERSIÓN 1.0)
 ================================================================================
- Operador Activo: Bibliotecario de Turno | Fecha del Sistema: 2026-10-25
+ Operador Activo: Bibliotecario de Turno | Fecha del Sistema: 2026-11-07
 --------------------------------------------------------------------------------
- [⚠ ATENCIÓN] 2 préstamos vencidos y 1 préstamo vence en las próximas 48 horas.
+ [⚠ ATENCIÓN] 1 préstamo vencido: #1 "Cien años de soledad" (venció el 2026-10-25).
               Consulte: [9] Reportes > [3] Préstamos Activos y Vencidos
 --------------------------------------------------------------------------------
  [1] Registrar nuevo libro en catálogo
@@ -125,20 +125,20 @@ El bibliotecario **nunca digita códigos de memoria**:
 Ruta: Menú Principal > [1] Registrar Nuevo Libro en Catálogo
 [Presione 0 o ESC para cancelar y regresar]
 ================================================================================
- Ingrese Título: Cien años de soledad
+ Ingrese Título: Crónica de una muerte anunciada
  Autor (escriba nombre/apellido, ISNI o '?' para ver todos): García
  >> Coincidencias encontradas:
     [1] Gabriel García Márquez (ISNI: 0000-0001-2141-4109)
  Seleccione autor (1..N) o 0 para buscar de nuevo: 1
  [✔] Autor asociado: Gabriel García Márquez
- Ingrese Año de Publicación (1000 - año actual): 1967
- Ingrese Código ISBN (10 o 13 dígitos): 978-0307474728
+ Ingrese Año de Publicación (1000 - año actual): 1981
+ Ingrese Código ISBN (10 o 13 dígitos): 978-0307475428
  >> Categorías disponibles:
     [1] Novela y Ficción   [2] Ciencia y Tecnología   [3] Historia y Filosofía
  Seleccione categoría (1..N): 1
 --------------------------------------------------------------------------------
  [SISTEMA] Validando formato y unicidad de ISBN (RN-01)...
- [✔ ÉXITO] Libro #101 registrado en el catálogo con estado: DISPONIBLE.
+ [✔ ÉXITO] Libro #5 registrado en el catálogo con estado: DISPONIBLE.
  Presione ENTER para continuar...
 ```
 
@@ -168,9 +168,9 @@ Ruta: Menú Principal > [2] Registrar Nuevo Autor
 ================================================================================
  Ingrese Código Normalizado (ISNI / ORCID, formato 0000-0000-0000-000X): 12345
  [✖ VALIDACIÓN]: El código debe tener 16 caracteres en bloques de 4 (0000-0000-0000-000X).
- Ingrese Código Normalizado (ISNI / ORCID, formato 0000-0000-0000-000X): 0000-0001-2141-4109
- Ingrese Nombre Completo del Autor: Gabriel García Márquez
- Ingrese Nacionalidad: Colombiana
+ Ingrese Código Normalizado (ISNI / ORCID, formato 0000-0000-0000-000X): 0000-0001-2283-3990
+ Ingrese Nombre Completo del Autor: Isabel Allende
+ Ingrese Nacionalidad: Chilena
 --------------------------------------------------------------------------------
  [SISTEMA] Validando unicidad de identificador (RN-02)...
  [✔ ÉXITO] Autor registrado correctamente en la base de datos de autores.
@@ -187,9 +187,9 @@ Alta de prestatario con validación de documento único y teléfono de 10 dígit
 Ruta: Menú Principal > [3] Registrar Nuevo Usuario Prestatario
 [Presione 0 o ESC para cancelar y regresar]
 ================================================================================
- Ingrese Número de Documento de Identidad (6-15 dígitos): 1075248911
- Ingrese Nombre Completo: Juan David Romero Calderón
- Ingrese Número Telefónico (10 dígitos): 3124567890
+ Ingrese Número de Documento de Identidad (6-15 dígitos): 1075456789
+ Ingrese Nombre Completo: María Fernanda López
+ Ingrese Número Telefónico (10 dígitos): 3201234567
 --------------------------------------------------------------------------------
  [SISTEMA] Validando documento (RN-03)...
  [✔ ÉXITO] Usuario registrado exitosamente con estado: ACTIVO.
@@ -206,23 +206,23 @@ Captura transaccional de préstamo con búsqueda guiada de lectores y títulos:
 Ruta: Menú Principal > [8] Gestión de Préstamos > [1] Registrar Salida (Préstamo)
 [Presione 0 o ESC para cancelar y regresar]
 ================================================================================
- Ingrese Documento o Nombre del Lector: David
+ Ingrese Documento o Nombre del Lector: Oteca
  >> Coincidencias encontradas:
-    [1] Juan David Romero Calderón (Doc: 1075248911 | Estado: ACTIVO)
+    [1] Juan Diego Oteca Pedreros (Doc: 1075334812 | Estado: ACTIVO)
  Seleccione lector (1..N): 1
- [✔] Lector seleccionado: Juan David Romero Calderón | Estado: HABILITADO
+ [✔] Lector seleccionado: Juan Diego Oteca Pedreros | Estado: HABILITADO
 
- Ingrese ID, Título o ISBN del Libro a Prestar: Cien
+ Ingrese ID, Título o ISBN del Libro a Prestar: Quijote
  >> Coincidencias encontradas:
-    [1] [#101] Cien años de soledad — G. García Márquez (DISPONIBLE)
+    [1] [#2] Don Quijote de la Mancha — M. de Cervantes Saavedra (DISPONIBLE)
  Seleccione ejemplar (1..N): 1
- [✔] Libro seleccionado: "Cien años de soledad" | Estado: DISPONIBLE
+ [✔] Libro seleccionado: "Don Quijote de la Mancha" | Estado: DISPONIBLE
 
  Ingrese Días de Préstamo pactados (1-30) [Por defecto: 14]: 14
 --------------------------------------------------------------------------------
- [SISTEMA] Calculando fecha límite: 2026-11-08...
+ [SISTEMA] Calculando fecha límite: 2026-11-07 + 14 días = 2026-11-21...
  [SISTEMA] Actualizando estado del libro a NO DISPONIBLE...
- [✔ ÉXITO] Préstamo #1001 registrado exitosamente.
+ [✔ ÉXITO] Préstamo #3 registrado exitosamente.
  Presione ENTER para continuar...
 ```
 
@@ -236,16 +236,18 @@ Reintegro de material y control de entrega a tiempo o tardía:
 Ruta: Menú Principal > [8] Gestión de Préstamos > [2] Registrar Devolución Física
 [Presione 0 o ESC para cancelar y regresar]
 ================================================================================
- Ingrese ID del Préstamo o ID del Libro: 1001
+ Ingrese ID del Préstamo o ID del Libro: 1
  [✔] Préstamo Activo Encontrado:
-     - Libro: "Cien años de soledad" (ID: 101)
+     - Préstamo: #1
+     - Libro: "Cien años de soledad" (ID: 1)
      - Usuario: Juan David Romero Calderón (Doc: 1075248911)
-     - Fecha Préstamo: 2026-10-25 | Fecha Límite Pactada: 2026-11-08
-     - Fecha Actual del Sistema: 2026-11-01
+     - Fecha Préstamo: 2026-10-15 | Fecha Límite Pactada: 2026-10-25
+     - Fecha Actual del Sistema: 2026-11-07
 --------------------------------------------------------------------------------
  Confirmar recepción física del ejemplar (S/N): S
  [SISTEMA] Validando fechas...
- [✔ ÉXITO] Devolución registrada a tiempo. Préstamo cerrado y libro DISPONIBLE.
+ [⚠ ADVERTENCIA] Devolución registrada con retraso (13 días después de la fecha límite).
+                 Préstamo cerrado con estado OVERDUE y libro DISPONIBLE.
  Presione ENTER para continuar...
 ```
 
@@ -263,13 +265,13 @@ Ruta: Menú Principal > [4] Buscar Libro por ID / Disponibilidad
  Ingrese ID numérico o título del libro: Cien años de soledad
 
  [FICHA TÉCNICA DEL EJEMPLAR]
-  ID Numérico: 101
+  ID Numérico: 1
   Título de la Obra: Cien años de soledad
   Código ISBN: 978-0307474728
   Autor Maestro: Gabriel García Márquez (Colombiana)
   Categoría Temática: Novela y Ficción
   ESTADO DE DISPONIBILIDAD: [ NO DISPONIBLE - EN PRÉSTAMO ACTIVO ]
-  Fecha Límite Pactada de Devolución: 2026-11-08
+  Fecha Límite Pactada de Devolución: 2026-10-25 (vencida)
   Lector Asignado: Juan David Romero Calderón (Tel: 3124567890)
 --------------------------------------------------------------------------------
  Presione ENTER para volver...
@@ -303,9 +305,9 @@ Ruta: Menú Principal > [5] Búsqueda por Título o Autor (Coincidencia Parcial)
 --------------------------------------------------------------------------------
  ID   | ISBN            | TÍTULO DE LA OBRA              | AUTOR            | ESTADO
 ------+-----------------+--------------------------------+------------------+------------
- 101  | 978-0307474728  | Cien años de soledad           | G. García M.     | Prestado
- 104  | 978-0307387738  | El amor en los tiempos del...  | G. García M.     | Disponible
- 108  | 978-9580424567  | Crónica de una muerte...       | G. García M.     | Disponible
+ 1    | 978-0307474728  | Cien años de soledad           | G. García M.     | Prestado
+ 4    | 978-0307387738  | El amor en los tiempos del...  | G. García M.     | Disponible
+ 5    | 978-0307475428  | Crónica de una muerte...       | G. García M.     | Disponible
 --------------------------------------------------------------------------------
  Total de coincidencias encontradas: 3 registros activos.
  Presione ENTER para volver al menú principal...
@@ -323,11 +325,10 @@ Ruta: Menú Principal > [9] Módulo de Reportes > [3] Préstamos Activos y Venci
  Fecha del Sistema: 2026-11-07
  ID P. | TÍTULO DEL LIBRO               | PRESTATARIO       | EMISIÓN    | VENCE      | ESTADO
 -------+--------------------------------+-------------------+------------+------------+--------------
- 1002  | Clean Code: A Handbook of...   | Juan Diego Oteca  | 2026-10-15 | 2026-10-29 | ✖ VENCIDO
- 1003  | Don Quijote de la Mancha       | Jhojan Melo       | 2026-10-18 | 2026-10-28 | ✖ VENCIDO
- 1001  | Cien años de soledad           | Juan David Romero | 2026-10-25 | 2026-11-08 | ⚠ VENCE PRONTO
+ 1     | Cien años de soledad           | Juan David Romero | 2026-10-15 | 2026-10-25 | ✖ VENCIDO
+ 3     | Don Quijote de la Mancha       | Juan Diego Oteca  | 2026-11-07 | 2026-11-21 | ✔ EN CURSO
 ================================================================================
- Resumen: ✖ En mora: 2 | ⚠ Vencen en 48 h: 1 | En curso sin riesgo: 0
+ Resumen: ✖ En mora: 1 | ⚠ Vencen en 48 h: 0 | En curso sin riesgo: 1
  Presione ENTER para volver...
 ```
 
@@ -444,11 +445,11 @@ sequenceDiagram
     CLI -->> B: Despliega Submenú Transaccional con Breadcrumb
     B ->> F: 2. Selecciona Opción [1] (Prestar Libro)
     F -->> B: Solicita Lector (Búsqueda asistida) y Libro
-    B ->> F: Digita "David", selecciona [1]; digita "Cien", selecciona [1]
-    F -->> B: [✔ ÉXITO] Préstamo #1001 Registrado. Libro pasa a NO DISPONIBLE.
+    B ->> F: Digita "Oteca", selecciona [1]; digita "Quijote", selecciona [1]
+    F -->> B: [✔ ÉXITO] Préstamo #3 Registrado. Libro pasa a NO DISPONIBLE.
     B ->> CLI: 3. Regresa al Menú Principal [0]
     B ->> R: 4. Selecciona Opción [9] -> Reporte de Disponibilidad
-    R -->> B: Muestra tabla con el Libro 101 como "Prestado"
+    R -->> B: Muestra tabla con el Libro 2 (Don Quijote) como "Prestado"
     B ->> CLI: 5. Selecciona Opción [0] para Salir de la Aplicación
 ```
 
