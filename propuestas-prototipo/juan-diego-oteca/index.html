@@ -1297,7 +1297,7 @@
                   <th>Título</th>
                   <th>Autor</th>
                   <th>Categoría</th>
-                  <th>Fecha de Publicación</th>
+                  <th>Año de Publicación</th>
                   <th>Estado</th>
                   <th style="text-align:right;">Acción</th>
                 </tr>
@@ -1345,7 +1345,7 @@
                   <th>Título de la Obra</th>
                   <th>Autor</th>
                   <th>Categoría</th>
-                  <th>Fecha de Publicación</th>
+                  <th>Año de Publicación</th>
                   <th>Disponibilidad</th>
                   <th style="text-align:right;">Acciones</th>
                 </tr>
@@ -1643,18 +1643,11 @@
           <small id="isbnFeedback" class="field-feedback muted">Código de 10 o 13 dígitos (puede incluir guiones). No puede repetirse entre libros.</small>
         </div>
 
-        <!-- 3. FECHA DE PUBLICACIÓN Y AÑO DE EDICIÓN -->
-        <div class="form-grid-2">
-          <div class="form-group">
-            <label for="modalBookPubDate">Fecha de Publicación *</label>
-            <input type="date" id="modalBookPubDate" class="form-control" min="1000-01-01" required oninput="onBookPubDateInput()">
-            <small id="pubDateFeedback" class="field-feedback muted">Seleccione la fecha de publicación (no puede ser futura).</small>
-          </div>
-          <div class="form-group">
-            <label for="modalBookYear">Año de Edición *</label>
-            <input type="number" id="modalBookYear" class="form-control" min="1000" step="1" inputmode="numeric" required oninput="onBookYearInput()">
-            <small class="form-hint" id="modalBookYearHint">Se actualiza automáticamente con la fecha.</small>
-          </div>
+        <!-- 3. AÑO DE PUBLICACIÓN -->
+        <div class="form-group">
+          <label for="modalBookYear">Año de Publicación *</label>
+          <input type="number" id="modalBookYear" class="form-control" min="1000" step="1" inputmode="numeric" placeholder="Ej: 1967" required oninput="onBookYearInput()">
+          <small id="bookYearFeedback" class="field-feedback muted">Ingrese un año válido entre 1000 y el año actual.</small>
         </div>
 
         <div class="form-grid-2">
@@ -1790,10 +1783,10 @@
         { id: 3, author_code: "0000-0003-4512-9901", name: "Robert C. Martin", nationality: "Estadounidense" }
       ],
       books: [
-        { id: 1, isbn: "978-0307474728", title: "Cien años de soledad", author_id: 1, category_id: 1, publication_date: "1967-05-30", publication_year: 1967, is_available: false, is_deleted: false },
-        { id: 2, isbn: "978-8424116286", title: "Don Quijote de la Mancha", author_id: 2, category_id: 1, publication_date: "1605-01-16", publication_year: 1605, is_available: true, is_deleted: false },
-        { id: 3, isbn: "978-0132350884", title: "Clean Code: A Handbook of Agile Software Craftsmanship", author_id: 3, category_id: 2, publication_date: "2008-08-01", publication_year: 2008, is_available: true, is_deleted: false },
-        { id: 4, isbn: "978-0307387738", title: "El amor en los tiempos del cólera", author_id: 1, category_id: 1, publication_date: "1985-09-05", publication_year: 1985, is_available: true, is_deleted: false }
+        { id: 1, isbn: "978-0307474728", title: "Cien años de soledad", author_id: 1, category_id: 1, publication_year: 1967, is_available: false, is_deleted: false },
+        { id: 2, isbn: "978-8424116286", title: "Don Quijote de la Mancha", author_id: 2, category_id: 1, publication_year: 1605, is_available: true, is_deleted: false },
+        { id: 3, isbn: "978-0132350884", title: "Clean Code: A Handbook of Agile Software Craftsmanship", author_id: 3, category_id: 2, publication_year: 2008, is_available: true, is_deleted: false },
+        { id: 4, isbn: "978-0307387738", title: "El amor en los tiempos del cólera", author_id: 1, category_id: 1, publication_year: 1985, is_available: true, is_deleted: false }
       ],
       users: [
         { id: 1, document_number: "1075248911", full_name: "Juan David Romero Calderón", phone: "3124567890", is_active: true },
@@ -1807,7 +1800,7 @@
       ]
     };
 
-    const STORAGE_KEY = 'bibliogestion_fase4_db_v3';
+    const STORAGE_KEY = 'bibliogestion_fase4_db_v4';
     const MAX_SUGGESTIONS = 20;
     const ALERT_WINDOW_DAYS = 2;
 
@@ -2097,90 +2090,37 @@
     }
 
     // =====================================================================
-    // 3. VALIDACIÓN DE FECHA DE PUBLICACIÓN Y AÑO DE EDICIÓN
+    // 3. VALIDACIÓN DE AÑO DE PUBLICACIÓN
     // =====================================================================
-    function validatePublicationDateAndYear(pubDateStr, yearNum) {
-      const today = todayStr();
+    function validatePublicationYear(yearNum) {
       const currentYear = new Date().getFullYear();
-
-      if (!pubDateStr && !yearNum) {
-        return { valid: false, message: "La fecha y el año de publicación son obligatorios." };
+      if (!Number.isInteger(yearNum)) {
+        return { valid: false, message: "El año de publicación es obligatorio." };
       }
-      if (pubDateStr) {
-        if (!/^\d{4}-\d{2}-\d{2}$/.test(pubDateStr)) {
-          return { valid: false, message: "Seleccione una fecha de publicación válida." };
-        }
-        const dateYear = parseInt(pubDateStr.slice(0, 4), 10);
-        if (dateYear < 1000) {
-          return { valid: false, message: "La fecha de publicación no puede ser anterior al año 1000." };
-        }
-        if (pubDateStr > today) {
-          return { valid: false, message: `La fecha de publicación no puede ser futura (máximo ${today}).` };
-        }
-      }
-      if (!Number.isInteger(yearNum) || yearNum < 1000 || yearNum > currentYear) {
+      if (yearNum < 1000 || yearNum > currentYear) {
         return {
           valid: false,
-          message: `El año de edición debe estar entre 1000 y ${currentYear}.`
+          message: `El año de publicación debe estar entre 1000 y ${currentYear}.`
         };
       }
       return {
         valid: true,
-        message: `✔ Fecha de publicación (${pubDateStr}) verificada.`
+        message: `✔ Año de publicación (${yearNum}) verificado.`
       };
     }
 
-    function onBookPubDateInput() {
-      const dateInput = document.getElementById('modalBookPubDate');
-      const yearInput = document.getElementById('modalBookYear');
-      const feedback = document.getElementById('pubDateFeedback');
-
-      if (dateInput.value && /^\d{4}-\d{2}-\d{2}$/.test(dateInput.value)) {
-        yearInput.value = parseInt(dateInput.value.slice(0, 4), 10);
-      }
-      const yearNum = parseInt(yearInput.value, 10);
-      const res = validatePublicationDateAndYear(dateInput.value, yearNum);
-
-      dateInput.classList.remove('is-valid', 'is-invalid');
-      yearInput.classList.remove('is-valid', 'is-invalid');
-      if (res.valid) {
-        dateInput.classList.add('is-valid');
-        yearInput.classList.add('is-valid');
-        feedback.className = 'field-feedback ok';
-        feedback.textContent = res.message;
-      } else {
-        dateInput.classList.add('is-invalid');
-        yearInput.classList.add('is-invalid');
-        feedback.className = 'field-feedback err';
-        feedback.textContent = res.message;
-      }
-    }
-
     function onBookYearInput() {
-      const dateInput = document.getElementById('modalBookPubDate');
       const yearInput = document.getElementById('modalBookYear');
-      const feedback = document.getElementById('pubDateFeedback');
+      const feedback = document.getElementById('bookYearFeedback');
       const yearNum = parseInt(yearInput.value, 10);
 
-      if (Number.isInteger(yearNum) && yearNum >= 1000 && yearNum <= new Date().getFullYear()) {
-        const currentMonthDay = (dateInput.value && /^\d{4}-\d{2}-\d{2}$/.test(dateInput.value))
-          ? dateInput.value.slice(4)
-          : '-01-01';
-        let candidateDate = `${String(yearNum).padStart(4, '0')}${currentMonthDay}`;
-        if (candidateDate > todayStr()) candidateDate = todayStr();
-        dateInput.value = candidateDate;
-      }
-
-      const res = validatePublicationDateAndYear(dateInput.value, yearNum);
-      dateInput.classList.remove('is-valid', 'is-invalid');
+      const res = validatePublicationYear(yearNum);
       yearInput.classList.remove('is-valid', 'is-invalid');
       if (res.valid) {
-        dateInput.classList.add('is-valid');
         yearInput.classList.add('is-valid');
         feedback.className = 'field-feedback ok';
         feedback.textContent = res.message;
       } else {
-        dateInput.classList.add('is-invalid');
         yearInput.classList.add('is-invalid');
         feedback.className = 'field-feedback err';
         feedback.textContent = res.message;
@@ -2314,11 +2254,6 @@
         if (data) {
           const parsed = JSON.parse(data);
           if (hasValidStructure(parsed)) {
-            parsed.books.forEach(b => {
-              if (!b.publication_date && b.publication_year) {
-                b.publication_date = `${String(b.publication_year).padStart(4, '0')}-01-01`;
-              }
-            });
             return parsed;
           }
         }
@@ -2476,12 +2411,6 @@
 
         const restored = {};
         BACKUP_TABLES.forEach(t => restored[t] = data[t]);
-        // Mismo ajuste que al abrir la aplicación: libros sin fecha toman el 1 de enero de su año
-        restored.books.forEach(b => {
-          if (!b.publication_date && b.publication_year) {
-            b.publication_date = `${String(b.publication_year).padStart(4, '0')}-01-01`;
-          }
-        });
         db = restored;
         saveDatabase(db);
         notify(`Copia de seguridad cargada: ${summary}.`);
@@ -2628,16 +2557,13 @@
       } else if (id === 'bookModal') {
         const today = todayStr();
         const currentYear = new Date().getFullYear();
-        const pubDateInput = document.getElementById('modalBookPubDate');
         const yearInput = document.getElementById('modalBookYear');
-        pubDateInput.max = today;
         yearInput.max = currentYear;
-        document.getElementById('modalBookYearHint').textContent = `Entre 1000 y ${currentYear}.`;
 
         if (!document.getElementById('modalEditBookId').value) {
           populateBookModalSelects();
-          pubDateInput.value = today;
           yearInput.value = currentYear;
+          document.getElementById('bookYearFeedback').textContent = `Ingrese un año válido entre 1000 y ${currentYear}.`;
         }
       }
       const firstField = document.querySelector(`#${id} .modal-content input:not([type=hidden]), #${id} .modal-content select`);
@@ -2655,19 +2581,19 @@
       resetValidationClasses(id);
 
       if (id === 'bookModal') {
+        const currentYear = new Date().getFullYear();
         document.getElementById('modalEditBookId').value = '';
         document.getElementById('bookModalTitle').textContent = 'Registrar Nuevo Libro';
         document.getElementById('modalBookTitle').value = '';
         document.getElementById('modalBookIsbn').value = '';
-        document.getElementById('modalBookPubDate').value = todayStr();
-        document.getElementById('modalBookYear').value = new Date().getFullYear();
+        document.getElementById('modalBookYear').value = currentYear;
         document.getElementById('bookTitleCounter').textContent = '0 / 200';
         document.getElementById('bookTitleFeedback').className = 'field-feedback muted';
         document.getElementById('bookTitleFeedback').textContent = 'Escriba el título completo del libro (mínimo 3 caracteres).';
         document.getElementById('isbnFeedback').className = 'field-feedback muted';
         document.getElementById('isbnFeedback').textContent = 'Código de 10 o 13 dígitos (puede incluir guiones). No puede repetirse entre libros.';
-        document.getElementById('pubDateFeedback').className = 'field-feedback muted';
-        document.getElementById('pubDateFeedback').textContent = 'Seleccione la fecha de publicación (no puede ser futura).';
+        document.getElementById('bookYearFeedback').className = 'field-feedback muted';
+        document.getElementById('bookYearFeedback').textContent = `Ingrese un año válido entre 1000 y ${currentYear}.`;
       } else if (id === 'loanModal') {
         ['modalLoanBookInput', 'modalLoanBookId', 'modalLoanUserInput', 'modalLoanUserId', 'modalLoanNotes']
           .forEach(f => document.getElementById(f).value = '');
@@ -2756,7 +2682,7 @@
           <div class="sheet-row"><span>Código ISBN:</span><span style="font-family:monospace;">${escapeHtml(book.isbn)}</span></div>
           <div class="sheet-row"><span>Autor:</span><span>${escapeHtml(author ? author.name : 'Sin autor')}</span></div>
           <div class="sheet-row"><span>Categoría:</span><span>${escapeHtml(category ? category.name : 'Sin categoría')}</span></div>
-          <div class="sheet-row"><span>Fecha de Publicación:</span><span>${escapeHtml(book.publication_date || book.publication_year)}</span></div>
+          <div class="sheet-row"><span>Año de Publicación:</span><span>${escapeHtml(book.publication_year)}</span></div>
           <div class="sheet-row"><span>Estado Actual:</span>${statusHtml}</div>
           ${!book.is_available && activeLoan ? `
             <div class="sheet-row"><span>Fecha Estimada de Devolución:</span><strong style="color:var(--danger);">${escapeHtml(activeLoan.due_date)}</strong></div>
@@ -2986,12 +2912,11 @@
       const editId = parseInt(document.getElementById('modalEditBookId').value) || null;
       const title = document.getElementById('modalBookTitle').value.trim().replace(/\s+/g, ' ');
       const isbn = document.getElementById('modalBookIsbn').value.trim();
-      const pubDate = document.getElementById('modalBookPubDate').value.trim();
       const year = parseInt(document.getElementById('modalBookYear').value, 10);
       const authorId = parseInt(document.getElementById('modalBookAuthor').value, 10);
       const categoryId = parseInt(document.getElementById('modalBookCategory').value, 10);
 
-      if (!title || !isbn || !pubDate || !year || !authorId || !categoryId) {
+      if (!title || !isbn || !year || !authorId || !categoryId) {
         notify("Campo obligatorio: complete todos los datos del libro.", "error");
         return;
       }
@@ -3008,9 +2933,9 @@
         return;
       }
 
-      const dateCheck = validatePublicationDateAndYear(pubDate, year);
-      if (!dateCheck.valid) {
-        notify(dateCheck.message, "error");
+      const yearCheck = validatePublicationYear(year);
+      if (!yearCheck.valid) {
+        notify(yearCheck.message, "error");
         return;
       }
 
@@ -3025,7 +2950,6 @@
         Object.assign(book, {
           title,
           isbn,
-          publication_date: pubDate,
           publication_year: year,
           author_id: authorId,
           category_id: categoryId
@@ -3038,7 +2962,6 @@
           title,
           author_id: authorId,
           category_id: categoryId,
-          publication_date: pubDate,
           publication_year: year,
           is_available: true,
           is_deleted: false
@@ -3060,14 +2983,13 @@
       document.getElementById('bookModalTitle').textContent = `Editar Libro #${book.id}`;
       document.getElementById('modalBookTitle').value = book.title;
       document.getElementById('modalBookIsbn').value = book.isbn;
-      document.getElementById('modalBookPubDate').value = book.publication_date || `${String(book.publication_year).padStart(4, '0')}-01-01`;
       document.getElementById('modalBookYear').value = book.publication_year;
       document.getElementById('modalBookAuthor').value = book.author_id;
       document.getElementById('modalBookCategory').value = book.category_id;
       openModal('bookModal');
       onBookTitleInput();
       onBookIsbnInput();
-      onBookPubDateInput();
+      onBookYearInput();
     }
 
     // OPERACIÓN: DAR DE BAJA UN LIBRO
@@ -3333,14 +3255,13 @@
       tbody.innerHTML = avail.map(b => {
         const author = db.authors.find(a => a.id === b.author_id);
         const category = db.categories.find(c => c.id === b.category_id);
-        const pubDisplay = b.publication_date ? `${b.publication_date}` : String(b.publication_year);
         return `
           <tr>
             <td data-label="ISBN" style="font-family:monospace; font-size:0.85rem;">${escapeHtml(b.isbn)}</td>
             <td data-label="Título"><strong>${escapeHtml(b.title)}</strong></td>
             <td data-label="Autor">${escapeHtml(author ? author.name : 'Sin autor')}</td>
             <td data-label="Categoría"><span class="badge badge-neutral">${escapeHtml(category ? category.name : 'Sin categoría')}</span></td>
-            <td data-label="Fecha Publicación">${escapeHtml(pubDisplay)}</td>
+            <td data-label="Año de Publicación">${escapeHtml(b.publication_year)}</td>
             <td data-label="Estado"><span class="badge badge-success">Disponible</span></td>
             <td data-label="Acción" style="text-align:right;">
               <button class="btn-table primary" onclick="lendBook(${b.id})">📤 Prestar</button>
@@ -3381,7 +3302,6 @@
       tbody.innerHTML = filtered.map(b => {
         const author = db.authors.find(a => a.id === b.author_id);
         const category = db.categories.find(c => c.id === b.category_id);
-        const pubDisplay = b.publication_date ? `${b.publication_date}` : String(b.publication_year);
 
         let badge = '<span class="badge badge-success">Disponible</span>';
         if (b.is_deleted) badge = '<span class="badge badge-danger">Dado de baja</span>';
@@ -3407,7 +3327,7 @@
             <td data-label="Título"><strong>${escapeHtml(b.title)}</strong></td>
             <td data-label="Autor">${escapeHtml(author ? author.name : 'Sin autor')}</td>
             <td data-label="Categoría"><span class="badge badge-neutral">${escapeHtml(category ? category.name : 'Sin categoría')}</span></td>
-            <td data-label="Fecha Publicación">${escapeHtml(pubDisplay)}</td>
+            <td data-label="Año de Publicación">${escapeHtml(b.publication_year)}</td>
             <td data-label="Disponibilidad">${badge}</td>
             <td data-label="Acciones" style="text-align:right;">${actionBtns}</td>
           </tr>`;
