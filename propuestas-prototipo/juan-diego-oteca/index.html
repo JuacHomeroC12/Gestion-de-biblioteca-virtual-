@@ -2302,10 +2302,18 @@
         authorCodes.add(code);
       }
 
+      const isValidIsbnFormat = raw => {
+        const clean = cleanIsbnString(raw);
+        if (/^\d{13}$/.test(clean)) return clean[12] === computeIsbn13CheckDigit(clean.slice(0, 12));
+        if (/^\d{9}[\dX]$/.test(clean)) return clean[9] === computeIsbn10CheckDigit(clean.slice(0, 9));
+        return false;
+      };
+
       const isbns = new Set();
       for (const b of data.books) {
-        if (!isText(b.title) || !isText(b.isbn)) return `al libro #${b.id} le falta el título o el ISBN.`;
-        if (!Number.isInteger(b.publication_year)) return `el libro #${b.id} no tiene un año válido.`;
+        if (!isText(b.title) || b.title.trim().length < 3 || !isText(b.isbn)) return `al libro #${b.id} le falta el título o el ISBN.`;
+        if (!isValidIsbnFormat(b.isbn)) return `el libro #${b.id} tiene un ISBN con formato no válido (${b.isbn}).`;
+        if (!Number.isInteger(b.publication_year) || b.publication_year < 1000 || b.publication_year > 2100) return `el libro #${b.id} no tiene un año válido (debe estar entre 1000 y 2100).`;
         if (!isBool(b.is_available) || !isBool(b.is_deleted)) return `el libro #${b.id} no tiene un estado válido.`;
         if (!authorIds.has(b.author_id)) return `el libro #${b.id} apunta a un autor que no existe.`;
         if (!categoryIds.has(b.category_id)) return `el libro #${b.id} apunta a una categoría que no existe.`;
@@ -2316,7 +2324,9 @@
 
       const documents = new Set();
       for (const u of data.users) {
-        if (!isText(u.full_name) || !isText(u.document_number) || !isText(u.phone)) return `al lector #${u.id} le faltan datos.`;
+        if (!isText(u.full_name) || u.full_name.trim().length < 3 || !isText(u.document_number) || !isText(u.phone)) return `al lector #${u.id} le faltan datos.`;
+        if (!/^\d{6,15}$/.test(String(u.document_number).trim())) return `el lector #${u.id} tiene un documento con formato no válido (${u.document_number}).`;
+        if (!/^\d{10}$/.test(String(u.phone).trim())) return `el lector #${u.id} tiene un teléfono con formato no válido (${u.phone}).`;
         if (!isBool(u.is_active)) return `el lector #${u.id} no tiene un estado válido.`;
         if (documents.has(u.document_number)) return `hay dos lectores con el mismo documento (${u.document_number}).`;
         documents.add(u.document_number);
