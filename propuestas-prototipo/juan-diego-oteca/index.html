@@ -2742,53 +2742,74 @@
       help.textContent = text;
     }
 
+    function findLoanUserCandidate(val) {
+      const match = val.match(/^\[CC\s*([^\]]+)\]/);
+      const docCandidate = match ? match[1].trim() : val;
+      return db.users.find(u =>
+        u.document_number === docCandidate ||
+        normalizeText(u.full_name) === normalizeText(val)
+      ) || null;
+    }
+
+    function findLoanBookCandidate(val) {
+      const match = val.match(/^\[#(\d+)\]/);
+      if (match) {
+        return db.books.find(b => b.id === parseInt(match[1], 10)) || null;
+      }
+      return db.books.find(b =>
+        String(b.id) === val ||
+        normalizeText(b.title) === normalizeText(val) ||
+        (cleanIsbnString(val).length >= 10 && cleanIsbnString(b.isbn) === cleanIsbnString(val))
+      ) || null;
+    }
+
     function onLoanBookInput() {
       const val = document.getElementById('modalLoanBookInput').value.trim();
       const idField = document.getElementById('modalLoanBookId');
-      const match = val.match(/^\[#(\d+)\]/);
-      const book = match
-        ? db.books.find(b => b.id === parseInt(match[1]) && !b.is_deleted && b.is_available)
-        : db.books.find(b => !b.is_deleted && b.is_available &&
-            (normalizeText(b.title) === normalizeText(val) || cleanIsbnString(b.isbn) === cleanIsbnString(val)));
+      const candidate = val ? findLoanBookCandidate(val) : null;
 
-      if (book) {
-        idField.value = book.id;
-        setHelp('modalLoanBookHelp', `✔ Ejemplar seleccionado: "${book.title}" (Disponible)`, 'ok');
+      if (candidate) {
+        if (candidate.is_deleted) {
+          idField.value = '';
+          setHelp('modalLoanBookHelp', 'Libro no encontrado en el catálogo activo.', 'err');
+          return;
+        }
+        const hasActiveLoan = db.loans.some(l => l.book_id === candidate.id && l.status === 'ACTIVE');
+        if (!candidate.is_available || hasActiveLoan) {
+          idField.value = '';
+          setHelp('modalLoanBookHelp', 'El libro seleccionado no cuenta con existencias disponibles para préstamo.', 'err');
+          return;
+        }
+        idField.value = candidate.id;
+        setHelp('modalLoanBookHelp', `✔ Ejemplar seleccionado: "${candidate.title}" (Disponible)`, 'ok');
         return;
       }
       idField.value = '';
       const suggestions = updateBookSuggestions();
       if (!val) setHelp('modalLoanBookHelp', '', 'muted');
-      else if (suggestions.length === 0) setHelp('modalLoanBookHelp', 'El libro buscado no está disponible para préstamo.', 'err');
+      else if (suggestions.length === 0) setHelp('modalLoanBookHelp', 'Libro no encontrado en el catálogo activo.', 'err');
       else setHelp('modalLoanBookHelp', `⚠ ${suggestions.length} coincidencia(s): elija una opción de la lista.`, 'warn');
     }
 
     function onLoanUserInput() {
       const val = document.getElementById('modalLoanUserInput').value.trim();
       const idField = document.getElementById('modalLoanUserId');
-      const match = val.match(/^\[CC\s*([^\]]+)\]/);
-      const docCandidate = match ? match[1].trim() : val;
+      const candidate = val ? findLoanUserCandidate(val) : null;
 
-      const inactiveUser = db.users.find(u => !u.is_active && (u.document_number === docCandidate || normalizeText(u.full_name) === normalizeText(val)));
-      if (inactiveUser) {
-        idField.value = '';
-        setHelp('modalLoanUserHelp', `Usuario no habilitado para préstamos (${inactiveUser.full_name} se encuentra inhabilitado).`, 'err');
-        return;
-      }
-
-      const user = match
-        ? db.users.find(u => u.document_number === match[1].trim() && u.is_active)
-        : db.users.find(u => u.is_active && (u.document_number === val || normalizeText(u.full_name) === normalizeText(val)));
-
-      if (user) {
-        idField.value = user.id;
-        setHelp('modalLoanUserHelp', `✔ Lector seleccionado: ${user.full_name}`, 'ok');
+      if (candidate) {
+        if (!candidate.is_active) {
+          idField.value = '';
+          setHelp('modalLoanUserHelp', 'Usuario no habilitado para préstamos. Estado actual: INACTIVO.', 'err');
+          return;
+        }
+        idField.value = candidate.id;
+        setHelp('modalLoanUserHelp', `✔ Lector seleccionado: ${candidate.full_name}`, 'ok');
         return;
       }
       idField.value = '';
       const suggestions = updateUserSuggestions();
       if (!val) setHelp('modalLoanUserHelp', '', 'muted');
-      else if (suggestions.length === 0) setHelp('modalLoanUserHelp', 'No se encontró ningún lector habilitado con ese dato.', 'err');
+      else if (suggestions.length === 0) setHelp('modalLoanUserHelp', 'Usuario no registrado en el sistema.', 'err');
       else setHelp('modalLoanUserHelp', `⚠ ${suggestions.length} coincidencia(s): elija un lector de la lista.`, 'warn');
     }
 
@@ -2817,35 +2838,48 @@
     // OPERACIÓN: PRESTAR LIBRO
     // =====================================================================
     function confirmLoan() {
-      const userId = parseInt(document.getElementById('modalLoanUserId').value);
-      const bookId = parseInt(document.getElementById('modalLoanBookId').value);
+      const userRaw = document.getElementById('modalLoanUserInput').value.trim();
+      const bookRaw = document.getElementById('modalLoanBookInput').value.trim();
+      const userId = parseInt(document.getElementById('modalLoanUserId').value, 10);
+      const bookId = parseInt(document.getElementById('modalLoanBookId').value, 10);
       const days = parseInt(document.getElementById('modalLoanDays').value) || 14;
       const notes = document.getElementById('modalLoanNotes').value.trim();
 
-      if (!userId) {
-        notify("Seleccione un lector habilitado de la lista sugerida.", "error");
+      if (!userRaw || !bookRaw) {
+        notify("Campo obligatorio", "error");
         return;
       }
-      if (!bookId) {
-        notify("Seleccione un libro disponible de la lista sugerida.", "error");
+
+      const user = userId
+        ? db.users.find(u => u.id === userId)
+        : findLoanUserCandidate(userRaw);
+
+      if (!user) {
+        notify("Usuario no registrado en el sistema.", "error");
         return;
       }
+      if (!user.is_active) {
+        notify("Usuario no habilitado para préstamos. Estado actual: INACTIVO.", "error");
+        return;
+      }
+
+      const book = bookId
+        ? db.books.find(b => b.id === bookId)
+        : findLoanBookCandidate(bookRaw);
+
+      if (!book || book.is_deleted) {
+        notify("Libro no encontrado en el catálogo activo.", "error");
+        return;
+      }
+
+      const hasActiveLoan = db.loans.some(l => l.book_id === book.id && l.status === 'ACTIVE');
+      if (!book.is_available || hasActiveLoan) {
+        notify("El libro seleccionado no cuenta con existencias disponibles para préstamo.", "error");
+        return;
+      }
+
       if (days < 1 || days > 30) {
         notify("El plazo del préstamo debe estar entre 1 y 30 días.", "error");
-        return;
-      }
-
-      const book = db.books.find(b => b.id === bookId);
-      const user = db.users.find(u => u.id === userId);
-
-      if (!user || !user.is_active) {
-        notify("Usuario no habilitado para préstamos.", "error");
-        return;
-      }
-
-      const hasActiveLoan = db.loans.some(l => l.book_id === bookId && l.status === 'ACTIVE');
-      if (!book || !book.is_available || book.is_deleted || hasActiveLoan) {
-        notify("El libro seleccionado no cuenta con existencias disponibles para préstamo.", "error");
         return;
       }
 
