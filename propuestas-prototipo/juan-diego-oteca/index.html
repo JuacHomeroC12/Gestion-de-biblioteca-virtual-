@@ -2917,16 +2917,6 @@
       refreshUI();
     }
 
-    function extendLoan(loanId) {
-      const loan = db.loans.find(l => l.id === loanId);
-      if (!loan || loan.status !== 'ACTIVE') return;
-
-      loan.due_date = addDays(loan.due_date, 7);
-      saveDatabase(db);
-      notify(`Plazo extendido 7 días. Nueva fecha límite: ${loan.due_date}.`);
-      refreshUI();
-    }
-
     // =====================================================================
     // OPERACIÓN: REGISTRAR Y EDITAR LIBRO
     // =====================================================================
@@ -3026,24 +3016,22 @@
       document.getElementById('bookYearFeedback').textContent = 'El año de publicación no puede modificarse al editar.';
     }
 
-    // OPERACIÓN: DAR DE BAJA UN LIBRO
-    function toggleDeleteBook(id) {
+    // OPERACIÓN: DAR DE BAJA UN LIBRO (BAJA LÓGICA)
+    function deleteBook(id) {
       const book = db.books.find(b => b.id === id);
-      if (!book) return;
+      if (!book || book.is_deleted) return;
 
-      if (!book.is_available && !book.is_deleted) {
+      if (!book.is_available) {
         notify("No se puede eliminar un libro que tiene un préstamo activo.", "error");
         return;
       }
-      if (!book.is_deleted && !confirm(`¿Dar de baja el ejemplar "${book.title}"?\nDejará de aparecer en el catálogo disponible, pero se conservará su historial de préstamos.`)) {
+      if (!confirm(`¿Dar de baja el ejemplar "${book.title}"?\nDejará de aparecer en el catálogo disponible, pero se conservará su historial de préstamos.`)) {
         return;
       }
 
-      book.is_deleted = !book.is_deleted;
+      book.is_deleted = true;
       saveDatabase(db);
-      notify(book.is_deleted
-        ? "Libro dado de baja del catálogo exitosamente."
-        : "Ejemplar restaurado al catálogo activo.");
+      notify("Libro dado de baja del catálogo.");
       refreshUI();
     }
 
@@ -3316,14 +3304,14 @@
 
         let actionBtns;
         if (b.is_deleted) {
-          actionBtns = `<button class="btn-table primary" onclick="toggleDeleteBook(${b.id})">Restaurar</button>`;
+          actionBtns = `<span style="font-size:0.75rem; color:var(--text-muted);">Dado de baja</span>`;
         } else {
           actionBtns = `
             <div class="action-group" style="justify-content:flex-end;">
               <button class="btn-table" onclick="openAvailabilityModal(${b.id})" title="Ver ficha completa de disponibilidad">🔍 Detalle</button>
               ${b.is_available ? `<button class="btn-table primary" onclick="lendBook(${b.id})">Prestar</button>` : ''}
               <button class="btn-table" onclick="editBook(${b.id})">Editar</button>
-              <button class="btn-table danger" onclick="toggleDeleteBook(${b.id})">Dar de baja</button>
+              <button class="btn-table danger" onclick="deleteBook(${b.id})">Dar de baja</button>
             </div>`;
         }
 
@@ -3381,7 +3369,6 @@
           : `
             <div class="action-group" style="justify-content:flex-end;">
               <button class="btn-table primary" onclick="processReturn(${l.id})">📥 Devolver</button>
-              <button class="btn-table" onclick="extendLoan(${l.id})">⏱ +7 días</button>
             </div>`;
 
         return `
