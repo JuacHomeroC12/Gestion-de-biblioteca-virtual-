@@ -1469,7 +1469,7 @@
         <div class="card">
           <div class="card-header">
             <h3 class="card-title">Clasificación Temática de Libros</h3>
-            <button class="btn btn-primary" onclick="openModal('categoryModal')">+ Nueva Categoría</button>
+            <span class="badge badge-neutral">Catálogo precargado del sistema</span>
           </div>
           <div class="table-container">
             <table>
@@ -1733,33 +1733,6 @@
       <div class="modal-bottom">
         <button class="btn btn-outline" onclick="closeModal('authorModal')">Cancelar</button>
         <button class="btn btn-primary" onclick="saveAuthor()">Guardar Autor</button>
-      </div>
-    </div>
-  </div>
-
-  <!-- ============================================== -->
-  <!-- MODAL: REGISTRAR CATEGORÍA                     -->
-  <!-- ============================================== -->
-  <div class="modal-backdrop" id="categoryModal">
-    <div class="modal-box">
-      <div class="modal-top">
-        <h3>Nueva Categoría Temática</h3>
-        <button class="modal-close-btn" onclick="closeModal('categoryModal')">✕</button>
-      </div>
-      <div class="modal-content">
-        <div class="form-group">
-          <label for="modalCategoryName">Nombre de la Categoría *</label>
-          <input type="text" id="modalCategoryName" class="form-control" placeholder="Ej: Arte y Arquitectura" minlength="3" maxlength="50" required oninput="onPersonNameInput('modalCategoryName', 'categoryNameFeedback', false)">
-          <small id="categoryNameFeedback" class="field-feedback muted">Entre 3 y 50 caracteres (solo letras y espacios).</small>
-        </div>
-        <div class="form-group">
-          <label for="modalCategoryDesc">Descripción (opcional)</label>
-          <textarea id="modalCategoryDesc" class="form-control" rows="3" maxlength="500" placeholder="Detalle temático de las obras pertenecientes a esta clasificación..."></textarea>
-        </div>
-      </div>
-      <div class="modal-bottom">
-        <button class="btn btn-outline" onclick="closeModal('categoryModal')">Cancelar</button>
-        <button class="btn btn-primary" onclick="saveCategory()">Guardar Categoría</button>
       </div>
     </div>
   </div>
@@ -2615,10 +2588,6 @@
         document.getElementById('authorNameFeedback').textContent = 'Ingrese nombre y apellido del autor (solo letras y espacios, sin números).';
         document.getElementById('authorNatFeedback').className = 'field-feedback muted';
         document.getElementById('authorNatFeedback').textContent = 'Solo letras (mínimo 3 caracteres).';
-      } else if (id === 'categoryModal') {
-        ['modalCategoryName', 'modalCategoryDesc'].forEach(f => document.getElementById(f).value = '');
-        document.getElementById('categoryNameFeedback').className = 'field-feedback muted';
-        document.getElementById('categoryNameFeedback').textContent = 'Entre 3 y 50 caracteres (solo letras y espacios).';
       }
     }
 
@@ -3152,34 +3121,6 @@
       saveDatabase(db);
       closeModal('authorModal');
       notify("Autor registrado correctamente.");
-      refreshUI();
-    }
-
-    // =====================================================================
-    // OPERACIÓN: REGISTRAR CATEGORÍA
-    // =====================================================================
-    function saveCategory() {
-      const rawName = document.getElementById('modalCategoryName').value;
-      const desc = document.getElementById('modalCategoryDesc').value.trim();
-
-      const nameCheck = validateRegisteredName(rawName, false);
-      if (!nameCheck.valid) {
-        notify(nameCheck.message, "error");
-        return;
-      }
-      if (db.categories.some(c => normalizeText(c.name) === normalizeText(nameCheck.normalized))) {
-        notify("Ya existe una categoría con este nombre.", "error");
-        return;
-      }
-
-      db.categories.push({
-        id: nextId(db.categories),
-        name: nameCheck.normalized,
-        description: desc || "Clasificación temática general"
-      });
-      saveDatabase(db);
-      closeModal('categoryModal');
-      notify("Categoría registrada correctamente.");
       refreshUI();
     }
 
