@@ -1637,7 +1637,7 @@
         <div class="form-group">
           <label for="modalBookIsbn">
             <span>Código ISBN *</span>
-            <button type="button" class="inline-helper-btn" onclick="generateSampleIsbn13()" title="Generar un código ISBN de 13 dígitos válido">Sugerir ISBN</button>
+            <button type="button" id="btnSuggestIsbn" class="inline-helper-btn" onclick="generateSampleIsbn13()" title="Generar un código ISBN de 13 dígitos válido">Sugerir ISBN</button>
           </label>
           <input type="text" id="modalBookIsbn" class="form-control" placeholder="Ej: 978-0307474728" minlength="10" maxlength="17" inputmode="numeric" required oninput="onBookIsbnInput()">
           <small id="isbnFeedback" class="field-feedback muted">Código de 10 o 13 dígitos (puede incluir guiones). No puede repetirse entre libros.</small>
@@ -2535,11 +2535,14 @@
 
         if (!document.getElementById('modalEditBookId').value) {
           populateBookModalSelects();
+          document.getElementById('modalBookIsbn').disabled = false;
+          yearInput.disabled = false;
+          document.getElementById('btnSuggestIsbn').style.display = '';
           yearInput.value = currentYear;
           document.getElementById('bookYearFeedback').textContent = `Ingrese un año válido entre 1000 y ${currentYear}.`;
         }
       }
-      const firstField = document.querySelector(`#${id} .modal-content input:not([type=hidden]), #${id} .modal-content select`);
+      const firstField = document.querySelector(`#${id} .modal-content input:not([type=hidden]):not(:disabled), #${id} .modal-content select`);
       if (firstField) setTimeout(() => firstField.focus(), 50);
     }
 
@@ -2559,7 +2562,10 @@
         document.getElementById('bookModalTitle').textContent = 'Registrar Nuevo Libro';
         document.getElementById('modalBookTitle').value = '';
         document.getElementById('modalBookIsbn').value = '';
+        document.getElementById('modalBookIsbn').disabled = false;
+        document.getElementById('btnSuggestIsbn').style.display = '';
         document.getElementById('modalBookYear').value = currentYear;
+        document.getElementById('modalBookYear').disabled = false;
         document.getElementById('bookTitleCounter').textContent = '0 / 200';
         document.getElementById('bookTitleFeedback').className = 'field-feedback muted';
         document.getElementById('bookTitleFeedback').textContent = 'Escriba el título completo del libro (mínimo 3 caracteres).';
@@ -2913,53 +2919,60 @@
     // OPERACIÓN: REGISTRAR Y EDITAR LIBRO
     // =====================================================================
     function saveBook() {
-      const editId = parseInt(document.getElementById('modalEditBookId').value) || null;
+      const editId = parseInt(document.getElementById('modalEditBookId').value, 10) || null;
       const title = document.getElementById('modalBookTitle').value.trim().replace(/\s+/g, ' ');
-      const isbn = document.getElementById('modalBookIsbn').value.trim();
-      const year = parseInt(document.getElementById('modalBookYear').value, 10);
       const authorId = parseInt(document.getElementById('modalBookAuthor').value, 10);
       const categoryId = parseInt(document.getElementById('modalBookCategory').value, 10);
 
-      if (!title || !isbn || !year || !authorId || !categoryId) {
-        notify("Campo obligatorio: complete todos los datos del libro.", "error");
-        return;
-      }
-
-      const hasValidWords = /[A-Za-zÁÉÍÓÚÜÑáéíóúüñ]{2,}/.test(title);
-      if (title.length < 3 || title.length > 200 || !hasValidWords) {
-        notify("El título de la obra debe tener entre 3 y 200 caracteres válidos.", "error");
-        return;
-      }
-
-      const isbnCheck = analyzeIsbn(isbn, editId);
-      if (!isbnCheck.valid) {
-        notify(isbnCheck.message, "error");
-        return;
-      }
-
-      const yearCheck = validatePublicationYear(year);
-      if (!yearCheck.valid) {
-        notify(yearCheck.message, "error");
-        return;
-      }
-
-      if (!db.authors.some(a => a.id === authorId)) {
-        notify("Autor no registrado en el sistema.", "error");
-        return;
-      }
-
       if (editId) {
+        if (!title || !authorId || !categoryId) {
+          notify("Campo obligatorio", "error");
+          return;
+        }
+        const hasValidWords = /[A-Za-zÁÉÍÓÚÜÑáéíóúüñ]{2,}/.test(title);
+        if (title.length < 3 || title.length > 200 || !hasValidWords) {
+          notify("El título de la obra debe tener entre 3 y 200 caracteres válidos.", "error");
+          return;
+        }
+        if (!db.authors.some(a => a.id === authorId)) {
+          notify("Autor no registrado en el sistema.", "error");
+          return;
+        }
         const book = db.books.find(b => b.id === editId);
         if (!book) return;
         Object.assign(book, {
           title,
-          isbn,
-          publication_year: year,
           author_id: authorId,
           category_id: categoryId
         });
         notify("Libro actualizado correctamente.");
       } else {
+        const isbn = document.getElementById('modalBookIsbn').value.trim();
+        const year = parseInt(document.getElementById('modalBookYear').value, 10);
+
+        if (!title || !isbn || !year || !authorId || !categoryId) {
+          notify("Campo obligatorio: complete todos los datos del libro.", "error");
+          return;
+        }
+        const hasValidWords = /[A-Za-zÁÉÍÓÚÜÑáéíóúüñ]{2,}/.test(title);
+        if (title.length < 3 || title.length > 200 || !hasValidWords) {
+          notify("El título de la obra debe tener entre 3 y 200 caracteres válidos.", "error");
+          return;
+        }
+        const isbnCheck = analyzeIsbn(isbn, null);
+        if (!isbnCheck.valid) {
+          notify(isbnCheck.message, "error");
+          return;
+        }
+        const yearCheck = validatePublicationYear(year);
+        if (!yearCheck.valid) {
+          notify(yearCheck.message, "error");
+          return;
+        }
+        if (!db.authors.some(a => a.id === authorId)) {
+          notify("Autor no registrado en el sistema.", "error");
+          return;
+        }
         db.books.unshift({
           id: nextId(db.books),
           isbn,
@@ -2980,20 +2993,25 @@
 
     function editBook(id) {
       const book = db.books.find(b => b.id === id);
-      if (!book) return;
+      if (!book || book.is_deleted) return;
 
       populateBookModalSelects();
       document.getElementById('modalEditBookId').value = book.id;
       document.getElementById('bookModalTitle').textContent = `Editar Libro #${book.id}`;
       document.getElementById('modalBookTitle').value = book.title;
       document.getElementById('modalBookIsbn').value = book.isbn;
+      document.getElementById('modalBookIsbn').disabled = true;
+      document.getElementById('btnSuggestIsbn').style.display = 'none';
       document.getElementById('modalBookYear').value = book.publication_year;
+      document.getElementById('modalBookYear').disabled = true;
       document.getElementById('modalBookAuthor').value = book.author_id;
       document.getElementById('modalBookCategory').value = book.category_id;
       openModal('bookModal');
       onBookTitleInput();
-      onBookIsbnInput();
-      onBookYearInput();
+      document.getElementById('isbnFeedback').className = 'field-feedback muted';
+      document.getElementById('isbnFeedback').textContent = 'El ISBN no puede modificarse al editar (solo título, autor y categoría).';
+      document.getElementById('bookYearFeedback').className = 'field-feedback muted';
+      document.getElementById('bookYearFeedback').textContent = 'El año de publicación no puede modificarse al editar.';
     }
 
     // OPERACIÓN: DAR DE BAJA UN LIBRO
