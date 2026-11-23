@@ -33,7 +33,7 @@ Desarrollar un **Producto Mínimo Viable (MVP)** de un sistema de gestión bibli
 | **EP-02** | **Gestión de Usuarios** | Registro y habilitación de usuarios receptores de servicios de préstamo. | HU-03 |
 | **EP-03** | **Gestión de Préstamos y Devoluciones** | Control transaccional de salidas, recepciones y verificación de disponibilidad. | HU-05, HU-06, HU-09 |
 | **EP-04** | **Gestión de Penalizaciones** | Monitoreo y registro de sanciones derivadas de devoluciones extemporáneas. | HU-10 |
-| **EP-05** | **Administración y Control de Registros** | Modificación, actualización y baja física controlada de libros en el catálogo. | HU-08 |
+| **EP-05** | **Administración y Control de Registros** | Modificación, actualización y baja lógica controlada (`is_deleted = true`) de libros en el catálogo. | HU-08 |
 
 ---
 
@@ -47,7 +47,7 @@ Desarrollar un **Producto Mínimo Viable (MVP)** de un sistema de gestión bibli
 - **Como:** Bibliotecario.
 - **Quiero:** Agregar un nuevo libro al catálogo indicando su ID numérico, título, autor registrado, año de publicación, ISBN y categoría temática.
 - **Para:** Incorporarlo formalmente al inventario disponible para préstamo.
-> **Nota de Alcance e Inventario (MVP):** Conforme al alcance del Sprint 1, cada registro de libro representa simultáneamente la obra y su único ejemplar físico en biblioteca (1 ISBN = 1 Ejemplar). La administración de múltiples copias físicas por ISBN se contempla para iteraciones futuras (HU-13).
+> **Nota de Alcance e Inventario (MVP):** Conforme al alcance del Sprint 1, cada registro de libro representa simultáneamente la obra y su único ejemplar físico en biblioteca (1 ISBN = 1 Ejemplar). La administración de múltiples copias físicas por ISBN se contempla para iteraciones futuras (HU-14).
 - **Criterios de Aceptación (Gherkin):**
   - **CA-1 (Registro Exitoso):**  
     *Dado que* el bibliotecario ingresa los datos completos y válidos (ID único, título, autor existente, año de publicación, ISBN único y categoría),  
@@ -197,6 +197,10 @@ Desarrollar un **Producto Mínimo Viable (MVP)** de un sistema de gestión bibli
     *Dado que* el libro que se pretende eliminar se encuentra en calidad de `"No disponible"` (prestado en curso),  
     *Cuando* se intenta ejecutar la eliminación,  
     *Entonces* el sistema deniega estrictamente la acción y muestra `"No se puede eliminar un libro que tiene un préstamo activo"`.
+  - **CA-4 (Campo Obligatorio Vacío al Editar):**  
+    *Dado que* el bibliotecario está editando un libro y borra un campo obligatorio (por ejemplo, el título),  
+    *Cuando* intenta guardar los cambios,  
+    *Entonces* el sistema rechaza la actualización y muestra `"Campo obligatorio"`.
 
 ---
 
@@ -209,6 +213,71 @@ Desarrollar un **Producto Mínimo Viable (MVP)** de un sistema de gestión bibli
 | **HU-11** | **Won't Have** | **Notificaciones Automáticas por Email:** Envío de recordatorios previos al vencimiento. | Requiere integración con servidor SMTP e infraestructura de red externa. |
 | **HU-12** | **Won't Have** | **Sistema de Autenticación Multirrol (Login):** Control de acceso por credenciales para administradores, bibliotecarios y lectores. | El MVP asume operación local centralizada por un único bibliotecario de turno. |
 | **HU-13** | **Won't Have** | **Lectura Óptica de Códigos de Barras:** Escaneo por hardware de códigos en libros y carnés. | Depende de hardware periférico externo incompatible con las restricciones de desarrollo en consola básica. |
+| **HU-14** | **Won't Have** | **Gestión de Múltiples Ejemplares por ISBN:** Registro de varias copias físicas de una misma obra, cada una con su propio estado de disponibilidad. | El MVP fija la relación 1 ISBN = 1 ejemplar (RS-04); manejar varias copias exige separar obra y ejemplar en el modelo de datos. |
+
+### 4.3. Detalle de las Historias Complementarias (HU-09 a HU-14)
+
+---
+
+#### 🟡 HU-09: Ver Listado de Préstamos Activos (Should Have)
+- **Como:** Bibliotecario.
+- **Quiero:** Ver una pantalla con todos los libros que actualmente están fuera de la biblioteca y quién los tiene.
+- **Para:** Llevar un control general sin tener que revisar usuario por usuario.
+- **Criterios de Aceptación (Gherkin):**
+  - **CA-1 (Visualización Correcta):**  
+    *Dado que* existen préstamos en curso,  
+    *Cuando* el bibliotecario entra al módulo de préstamos,  
+    *Entonces* el sistema muestra una tabla con el título del libro, el nombre del usuario, la fecha de préstamo y la fecha límite de devolución.
+  - **CA-2 (Lista Vacía):**  
+    *Dado que* todos los libros están disponibles,  
+    *Cuando* el bibliotecario entra al módulo de préstamos,  
+    *Entonces* el sistema muestra el mensaje `"No hay préstamos activos en este momento"`.
+  - **CA-3 (Orden por Vencimiento):**  
+    *Dado que* hay varios préstamos activos,  
+    *Cuando* se muestra el listado,  
+    *Entonces* el sistema los ordena automáticamente, primero los que tienen la fecha límite más próxima a vencer.
+
+---
+
+#### 🟠 HU-10: Penalizaciones por Retraso (Could Have)
+- **Como:** Bibliotecario.
+- **Quiero:** Marcar a un usuario con una falta o multa si devuelve un libro después de la fecha límite.
+- **Para:** Llevar un historial del buen o mal comportamiento de los usuarios.
+- **Criterios de Aceptación (Gherkin):**
+  - **CA-1 (Asignación de Penalización):**  
+    *Dado que* un usuario devuelve un libro después de la fecha límite,  
+    *Cuando* se registra la devolución,  
+    *Entonces* el sistema suma una falta al perfil del usuario y muestra `"Devolución registrada con retraso. Penalización aplicada"`.
+  - **CA-2 (Devolución a Tiempo):**  
+    *Dado que* el usuario devuelve el libro en o antes de la fecha límite,  
+    *Cuando* se registra la devolución,  
+    *Entonces* el libro queda disponible sin alterar el contador de faltas.
+  - **CA-3 (Historial Visible):**  
+    *Dado que* el bibliotecario revisa a un usuario específico,  
+    *Cuando* entra a su perfil,  
+    *Entonces* el sistema muestra un contador con el total de penalizaciones.
+
+---
+
+#### 🔴 HU-11: Notificaciones Automáticas por Email (Won't Have)
+- **Como:** Bibliotecario.
+- **Quiero:** Que el sistema envíe un correo electrónico automático a los usuarios cuando se acerque su fecha de devolución.
+- **Para:** Reducir la cantidad de préstamos atrasados.
+
+#### 🔴 HU-12: Sistema de Autenticación Multirrol (Won't Have)
+- **Como:** Administrador del sistema.
+- **Quiero:** Un módulo de autenticación con contraseñas y distintos roles (Bibliotecario, Lector).
+- **Para:** Proteger la información y restringir los accesos según el cargo.
+
+#### 🔴 HU-13: Lectura Óptica de Códigos de Barras (Won't Have)
+- **Como:** Bibliotecario.
+- **Quiero:** Escanear el código de barras físico del libro y del carné del usuario.
+- **Para:** Registrar los préstamos y devoluciones de forma instantánea, sin digitar datos.
+
+#### 🔴 HU-14: Gestión de Múltiples Ejemplares por ISBN (Won't Have)
+- **Como:** Bibliotecario.
+- **Quiero:** Registrar varias copias físicas de una misma obra (mismo ISBN), cada una con su propio estado de disponibilidad.
+- **Para:** Prestar una copia aunque otra del mismo título ya esté prestada.
 
 ---
 
@@ -219,7 +288,7 @@ Desarrollar un **Producto Mínimo Viable (MVP)** de un sistema de gestión bibli
 | **Must Have** | HU-01 a HU-08 | **SÍ (100% Requerido)** | Constituyen el núcleo funcional indivisible del sistema: garantizan la creación de datos maestros (libros, autores, usuarios), el control de salidas y entradas (préstamos y devoluciones) y la integridad referencial en memoria. Sin ellas el negocio no puede operar. |
 | **Should Have** | HU-09 | **NO** | Funcionalidad de reportería global; deseable para monitoreo pero prescindible al existir consulta directa por ejemplar. |
 | **Could Have** | HU-10 | **NO** | Control de sanciones disciplinarias complementario; el registro transaccional ya deja constancia del retraso en HU-06. |
-| **Won't Have** | HU-11, HU-12, HU-13 | **NO** | Componentes con dependencias de red, seguridad multisesión y hardware periférico fuera de la arquitectura inicial. |
+| **Won't Have** | HU-11 a HU-14 | **NO** | Componentes con dependencias de red, seguridad multisesión, hardware periférico y copias múltiples por ISBN, fuera de la arquitectura inicial. |
 
 ---
 

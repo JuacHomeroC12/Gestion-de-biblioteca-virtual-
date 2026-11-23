@@ -15,7 +15,7 @@ Este espacio reúne **todo el estándar operativo, documental y técnico del pro
 1. **Cómo trabajar con Git y hacer commits profesionales.**
 2. **Cómo pasar los documentos Markdown (`.md`) a Microsoft Word y exportarlos a PDF.**
 3. **Cómo diseñar una portada institucional impecable y configurar índices automáticos.**
-4. **Cómo distribuir las tareas y commits para cumplir la meta de co-autoría exigida por el SENA (25% a 30% por integrante).**
+4. **Cómo distribuir las tareas y los commits entre los integrantes del equipo.**
 
 ---
 
@@ -42,7 +42,7 @@ docs/guia-de-trabajo-estandar/
 │   └── prompts_de_apoyo_para_ia.md   (Prompts listos para pedirle ayuda a ChatGPT / Claude / Gemini)
 │
 └── 04_matriz_fases_y_responsables/   --> ¿Quién hace qué fase para equilibrar los porcentajes?
-    └── distribucion_de_fases.md      (Asignación de Fases 1 a 5 y metas de evaluación)
+    └── distribucion_de_fases.md      (Asignación de Fases 1 a 5 y responsables)
 ```
 
 ---

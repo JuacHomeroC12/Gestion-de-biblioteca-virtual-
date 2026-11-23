@@ -112,7 +112,7 @@ git commit -m "docs(fase2): formalizar especificacion de requerimientos ieee 830
 #### 🔹 Instrucciones para Jhojan Javier Melo Avella:
 Agrega el diseño UML y la guía de equipo:
 ```powershell
-git add docs/fase3_diseno_uml.md docs/guia_git_equipo.md docs/pdf/
+git add docs/fase3_diseno_uml.md docs/guia_git_equipo.md
 git commit -m "docs(fase3): modelar casos de uso, clases y secuencias en mermaid"
 ```
 

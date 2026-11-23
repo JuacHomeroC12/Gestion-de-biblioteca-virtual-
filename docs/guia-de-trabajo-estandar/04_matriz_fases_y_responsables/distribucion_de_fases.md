@@ -1,5 +1,5 @@
 # 👥 DISTRIBUCIÓN DE FASES Y NIVELACIÓN DE APORTES EN GIT
-## Módulo 04 — Asignación de Responsabilidades y Metas de Evaluación
+## Módulo 04 — Asignación de Responsabilidades
 
 En la evaluación oficial de Fase 4 (2026-10-26), el instructor técnico emitió la siguiente observación prioritaria:
 
@@ -19,27 +19,11 @@ Para subsanar esta observación ante el instructor Carlos Julio Cadena y asegura
 | **Fase 1** | `docs/fase1_historias_usuario.md` | **Juan Diego Oteca ("Juaco")** | Homologar y actualizar la versión en PDF con la nueva portada e índice estándar. | `docs/fase1-pdf-oteca` |
 | **Fase 2** | `docs/fase2_especificacion_requerimientos_ieee830.md` | **Jhojan Javier Melo ("Melo")** | Homologar y maquetar en Word la especificación IEEE 830, exportar a PDF y hacer push. | `docs/fase2-pdf-melo` |
 | **Fase 3** | `docs/fase3_diseno_uml.md` | **Jhojan Javier Melo ("Melo")** | Exportar diagramas UML en alta definición, generar PDF con portada estándar y hacer push. | `docs/fase3-pdf-melo` |
-| **Fase 5** *(Futura)* | `docs/fase5_prototipo_interfaces.md` | **Todo el equipo** | Desarrollo colaborativo: Vistas HTML/Figma (Juaco y Melo) + Integración y Documento técnico (Juan David). | `feat/fase5-prototipo-...` |
+| **Fase 5** *(En curso)* | `docs/fase5_mockup_prototipo.md`<br>`propuestas-prototipo/` | **Todo el equipo** | Desarrollo colaborativo: Vistas HTML/Figma (Juaco y Melo) + Integración y Documento técnico (Juan David). | `feat/fase5-prototipo-...` |
 
 ---
 
-## 📊 2. Meta de Participación por Integrante
-
-Al completar la subida de los PDFs y arrancar la Fase 5, la distribución de commits en GitHub (`Insights -> Contributors`) debe quedar equilibrada de la siguiente manera:
-
-```text
-┌────────────────────────────────────────────────────────┐
-│ META DE CO-AUTORÍA EVALUABLE SENA                      │
-├────────────────────────────────┬───────────────────────┤
-│ Juan David Romero Calderón     │ 35% - 40% del total   │
-│ Juan Diego Oteca Pedreros      │ 30% - 35% del total   │
-│ Jhojan Javier Melo Avella      │ 30% - 35% del total   │
-└────────────────────────────────┴───────────────────────┘
-```
-
----
-
-## 📝 3. Compromiso de Trabajo Individual
+## 📝 2. Compromiso de Trabajo Individual
 
 Para que los commits se contabilicen a favor de cada persona:
 1. **Cada aprendiz debe trabajar desde su propia máquina y terminal**.
