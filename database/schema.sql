@@ -165,10 +165,10 @@ INSERT INTO books (isbn, title, author_id, category_id, publication_year, is_ava
 
 -- Inserción de Usuarios
 INSERT INTO users (document_number, full_name, phone, is_active) VALUES
-('1075248911', 'Juan David Romero', '3124567890', TRUE),
-('1075334812', 'Juan Diego Oteca', '3157891234', TRUE),
-('1075998123', 'Jhojan Javier Melo', '3189912345', TRUE),
-('1075000000', 'Carlos Inactivo', '3100000000', FALSE);
+('1075248911', 'Juan David Romero Calderón', '3124567890', TRUE),
+('1075334812', 'Juan Diego Oteca Pedreros', '3157891234', TRUE),
+('1075998123', 'Jhojan Javier Melo Avella', '3189912345', TRUE),
+('1075000000', 'Carlos Gómez Andrade', '3100000000', FALSE);
 
 -- Inserción de Préstamos (ejemplo activo y ejemplo devuelto)
 INSERT INTO loans (book_id, user_id, loan_date, due_date, return_date, status, notes) VALUES
