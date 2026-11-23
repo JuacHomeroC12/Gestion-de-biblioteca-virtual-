@@ -1585,14 +1585,9 @@
         </div>
         <div class="form-grid-2">
           <div class="form-group">
-            <label for="modalLoanDays">Días de Préstamo Pactados (1 a 30)</label>
-            <select id="modalLoanDays" class="form-control" onchange="calculateDueDate()">
-              <option value="7">7 Días</option>
-              <option value="10">10 Días</option>
-              <option value="14" selected>14 Días (Estándar)</option>
-              <option value="21">21 Días</option>
-              <option value="30">30 Días (Máximo permitido)</option>
-            </select>
+            <label for="modalLoanDays">Días de Préstamo Pactados (1 a 30) *</label>
+            <input type="number" id="modalLoanDays" class="form-control" min="1" max="30" step="1" value="14" inputmode="numeric" required oninput="calculateDueDate()">
+            <small id="modalLoanDaysHint" class="field-feedback muted">Plazo entre 1 y 30 días (14 días por defecto).</small>
           </div>
           <div class="form-group">
             <label for="modalLoanDueDate">Fecha Límite de Devolución</label>
@@ -2576,6 +2571,9 @@
       } else if (id === 'loanModal') {
         ['modalLoanBookInput', 'modalLoanBookId', 'modalLoanUserInput', 'modalLoanUserId', 'modalLoanNotes']
           .forEach(f => document.getElementById(f).value = '');
+        document.getElementById('modalLoanDays').value = '14';
+        document.getElementById('modalLoanDaysHint').className = 'field-feedback muted';
+        document.getElementById('modalLoanDaysHint').textContent = 'Plazo entre 1 y 30 días (14 días por defecto).';
         document.getElementById('modalLoanBookHelp').textContent = '';
         document.getElementById('modalLoanUserHelp').textContent = '';
       } else if (id === 'userModal') {
@@ -2598,8 +2596,22 @@
     }
 
     function calculateDueDate() {
-      const days = parseInt(document.getElementById('modalLoanDays').value) || 14;
-      document.getElementById('modalLoanDueDate').value = addDays(todayStr(), days);
+      const daysInput = document.getElementById('modalLoanDays');
+      const hint = document.getElementById('modalLoanDaysHint');
+      const dueField = document.getElementById('modalLoanDueDate');
+      const days = parseInt(daysInput.value, 10);
+      daysInput.classList.remove('is-valid', 'is-invalid');
+      if (!Number.isInteger(days) || days < 1 || days > 30) {
+        daysInput.classList.add('is-invalid');
+        hint.className = 'field-feedback err';
+        hint.textContent = 'El plazo del préstamo debe estar entre 1 y 30 días.';
+        dueField.value = 'Plazo inválido';
+        return;
+      }
+      daysInput.classList.add('is-valid');
+      hint.className = 'field-feedback ok';
+      hint.textContent = `✔ Plazo válido: ${days} día(s).`;
+      dueField.value = addDays(todayStr(), days);
     }
 
     // =====================================================================
@@ -2817,7 +2829,7 @@
       const bookRaw = document.getElementById('modalLoanBookInput').value.trim();
       const userId = parseInt(document.getElementById('modalLoanUserId').value, 10);
       const bookId = parseInt(document.getElementById('modalLoanBookId').value, 10);
-      const days = parseInt(document.getElementById('modalLoanDays').value) || 14;
+      const days = parseInt(document.getElementById('modalLoanDays').value, 10);
       const notes = document.getElementById('modalLoanNotes').value.trim();
 
       if (!userRaw || !bookRaw) {
@@ -2853,7 +2865,7 @@
         return;
       }
 
-      if (days < 1 || days > 30) {
+      if (!Number.isInteger(days) || days < 1 || days > 30) {
         notify("El plazo del préstamo debe estar entre 1 y 30 días.", "error");
         return;
       }
