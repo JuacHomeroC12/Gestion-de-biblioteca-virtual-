@@ -2883,11 +2883,12 @@
       if (book) book.is_available = true;
 
       const today = todayStr();
+      const isLate = today > loan.due_date;
       loan.return_date = today;
-      loan.status = "RETURNED";
+      loan.status = isLate ? "OVERDUE" : "RETURNED";
       saveDatabase(db);
 
-      if (today <= loan.due_date) {
+      if (!isLate) {
         notify("Devolución registrada a tiempo. El ejemplar ya está disponible.");
       } else {
         notify(`Devolución registrada con retraso (vencía el ${loan.due_date}).`, "warning");
@@ -3206,6 +3207,7 @@
 
     function loanBadge(loan, today) {
       if (loan.status === 'RETURNED') return '<span class="badge badge-neutral">Devuelto</span>';
+      if (loan.status === 'OVERDUE') return '<span class="badge badge-danger">Devuelto con retraso</span>';
       const risk = loanRiskInfo(loan, today);
       if (risk.overdue) return '<span class="badge badge-danger">✖ Vencido</span>';
       if (risk.soon) return '<span class="badge badge-warning">⚠ Vence pronto</span>';
@@ -3350,7 +3352,7 @@
         const risk = loanRiskInfo(l, today);
         let matchesStatus = true;
         if (statusFilter === 'ACTIVE') matchesStatus = l.status === 'ACTIVE';
-        else if (statusFilter === 'RETURNED') matchesStatus = l.status === 'RETURNED';
+        else if (statusFilter === 'RETURNED') matchesStatus = l.status === 'RETURNED' || l.status === 'OVERDUE';
         else if (statusFilter === 'OVERDUE') matchesStatus = risk.overdue;
         else if (statusFilter === 'DUE_SOON') matchesStatus = risk.soon;
 
@@ -3366,11 +3368,11 @@
       tbody.innerHTML = filtered.map(l => {
         const book = db.books.find(b => b.id === l.book_id);
         const user = db.users.find(u => u.id === l.user_id);
-        const isReturned = l.status === 'RETURNED';
-        const overdue = loanRiskInfo(l, today).overdue;
+        const isClosed = l.status !== 'ACTIVE';
+        const overdue = loanRiskInfo(l, today).overdue || l.status === 'OVERDUE';
 
-        const actionBtns = isReturned
-          ? `<span style="font-size:0.75rem; color:var(--text-muted);">Completado</span>`
+        const actionBtns = isClosed
+          ? `<span style="font-size:0.75rem; color:var(--text-muted);">${l.status === 'OVERDUE' ? 'Cerrado con retraso' : 'Completado'}</span>`
           : `
             <div class="action-group" style="justify-content:flex-end;">
               <button class="btn-table primary" onclick="processReturn(${l.id})">📥 Devolver</button>
@@ -3383,7 +3385,7 @@
             <td data-label="Libro"><strong>${escapeHtml(book ? book.title : 'Libro no encontrado')}</strong></td>
             <td data-label="Lector">${escapeHtml(user ? user.full_name : 'Lector no encontrado')}</td>
             <td data-label="Fecha Préstamo">${escapeHtml(l.loan_date)}</td>
-            <td data-label="Fecha Límite" style="font-weight:600; color:${overdue ? 'var(--danger)' : (isReturned ? 'var(--text-muted)' : 'var(--primary)')};">${escapeHtml(l.due_date)}</td>
+            <td data-label="Fecha Límite" style="font-weight:600; color:${overdue ? 'var(--danger)' : (isClosed ? 'var(--text-muted)' : 'var(--primary)')};">${escapeHtml(l.due_date)}</td>
             <td data-label="Fecha Reintegro">${l.return_date ? escapeHtml(l.return_date) : '<span style="color:var(--text-muted);">—</span>'}</td>
             <td data-label="Estado">${loanBadge(l, today)}</td>
             <td data-label="Acciones" style="text-align:right;">${actionBtns}</td>
