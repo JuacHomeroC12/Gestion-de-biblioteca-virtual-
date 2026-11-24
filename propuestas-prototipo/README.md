@@ -4,7 +4,7 @@ Cada integrante sube aquí su propuesta del prototipo HTML para revisarlas en eq
 
 | Carpeta | Integrante | Propuesta |
 | :--- | :--- | :--- |
-| [`juan-david-romero/`](juan-david-romero/) | Juan David Romero Calderón | *Pendiente* |
+| [`juan-david-romero/`](juan-david-romero/) | Juan David Romero Calderón | [`index.html`](juan-david-romero/index.html) |
 | [`juan-diego-oteca/`](juan-diego-oteca/) | Juan Diego Oteca Pedreros | [`index.html`](juan-diego-oteca/index.html) |
 | [`jhojan-melo/`](jhojan-melo/) | Jhojan Javier Melo Avella | *Pendiente* |
 
