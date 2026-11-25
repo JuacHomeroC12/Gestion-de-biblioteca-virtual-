@@ -14,7 +14,7 @@ La Fase 3 traduce las especificaciones funcionales y de negocio consolidadas en 
 
 El diseño se estructura en un patrón arquitectónico en tres capas desacopladas:
 1. **Capa de Modelo (Dominio):** Clases de entidad que representan la realidad del negocio con encapsulamiento estricto (`Autor`, `Categoria`, `Libro`, `Usuario`, `Prestamo`).
-2. **Capa de Servicio (Lógica de Negocio Desacoplada - SRP):** Servicios especializados por dominio que administran las colecciones dinámicas en memoria (`ArrayList`), ejecutan las validaciones y hacen cumplir las reglas de negocio: `CatalogoService` (libros, autores y categorías; RN-01, RN-02), `UsuarioService` (padrón y validación de usuarios; RN-03, RN-04) y `PrestamoService` (transacciones de préstamo, devolución y verificación de disponibilidad; RN-05).
+2. **Capa de Servicio (Lógica de Negocio Desacoplada - SRP):** Servicios especializados por dominio que administran las colecciones dinámicas en memoria (`ArrayList`), ejecutan las validaciones y hacen cumplir las reglas de negocio: `CatalogoService` (administración de libros, autores y catálogo maestro pre-sembrado de categorías temáticas; RN-01, RN-02), `UsuarioService` (padrón y validación de existencia y habilitación activa de prestatarios; RN-03, RN-04) y `PrestamoService` (transacciones de préstamo, devolución y verificación de disponibilidad física y lógica; RN-05).
 3. **Capa de Presentación (Vista CLI):** Controlador de interfaz de consola (`SubmenuGestionLibros`) responsable de la interacción con el operador, captura segura con `Scanner` y presentación de menús.
 
 ---
@@ -172,6 +172,7 @@ classDiagram
         -anioPublicacion: int
         -categoria: Categoria
         -disponible: boolean
+        -eliminado: boolean
         +Libro(id: int, titulo: String, isbn: String, autor: Autor, anioPublicacion: int, categoria: Categoria, disponible: boolean)
         +getId(): int
         +setId(id: int): void
@@ -187,6 +188,8 @@ classDiagram
         +setCategoria(categoria: Categoria): void
         +isDisponible(): boolean
         +setDisponible(disponible: boolean): void
+        +isEliminado(): boolean
+        +setEliminado(eliminado: boolean): void
         +toString(): String
     }
 
@@ -324,7 +327,11 @@ sequenceDiagram
     L -->> S: void
     
     S -->> V: true
-    V -->> B: Muestra "Devolución procesada y libro disponible"
+    alt Entrega dentro del plazo (fecha actual no supera la fecha límite)
+        V -->> B: Muestra "Devolución registrada a tiempo"
+    else Entrega fuera del plazo (fecha actual supera la fecha límite)
+        V -->> B: Muestra "Devolución registrada con retraso"
+    end
 ```
 
 ---
@@ -349,12 +356,13 @@ sequenceDiagram
     alt Libro Prestado (disponible == false)
         L -->> C: false (Prestado)
         C -->> V: false (Operación denegada por RN-05)
-        V -->> B: Alerta "No se puede eliminar un libro con préstamo activo"
+        V -->> B: Alerta "No se puede eliminar un libro que tiene un préstamo activo"
     else Libro Disponible (disponible == true)
         L -->> C: true (Disponible)
-        C ->> C: listaLibros.remove(l)
+        C ->> L: setEliminado(true)
+        Note over C,L: Baja lógica: el objeto permanece en listaLibros<br/>para conservar el historial de préstamos
         C -->> V: true
-        V -->> B: Muestra "Libro eliminado del catálogo exitosamente"
+        V -->> B: Muestra "Libro dado de baja del catálogo exitosamente"
     end
 ```
 
@@ -390,17 +398,24 @@ flowchart TD
     SelecPrestar --> IngresaPrestamo[Ingresa Documento de Usuario, ID Libro y Días]
     IngresaPrestamo --> BuscaUsuario[Sistema busca Usuario por Documento]
     
-    BuscaUsuario --> ValUsuario{¿Usuario existe y está activo?}
-    ValUsuario -- No --> ErrUsuario[Muestra: 'Usuario no registrado o inactivo']
-    ErrUsuario --> FinErr1([Fin con Rechazo])
+    BuscaUsuario --> ValExisteU{¿Usuario existe?}
+    ValExisteU -- No --> ErrNoReg[Muestra: 'Usuario no registrado en el sistema']
+    ErrNoReg --> FinErr1([Fin con Rechazo])
     
-    ValUsuario -- Sí --> BuscaLibro[Sistema busca Libro por ID]
-    BuscaLibro --> ValLibro{¿Libro existe y está disponible?}
+    ValExisteU -- Sí --> ValActivoU{¿Usuario activo RN-04?}
+    ValActivoU -- No --> ErrInactivo[Muestra: 'Usuario no habilitado para préstamos. Estado actual: INACTIVO']
+    ErrInactivo --> FinErr2([Fin con Rechazo])
     
-    ValLibro -- No --> ErrLibro[Muestra: 'El libro solicitado no está disponible']
-    ErrLibro --> FinErr2([Fin con Rechazo])
+    ValActivoU -- Sí --> BuscaLibro[Sistema busca Libro por ID]
+    BuscaLibro --> ValExisteL{¿Libro existe y activo?}
+    ValExisteL -- No --> ErrNoLibro[Muestra: 'Libro no encontrado en el catálogo activo']
+    ErrNoLibro --> FinErr3([Fin con Rechazo])
     
-    ValLibro -- Sí --> GenPrestamo[Instancia objeto Préstamo con fecha límite]
+    ValExisteL -- Sí --> ValDispL{¿Libro disponible?}
+    ValDispL -- No --> ErrNoDisp[Muestra: 'El libro seleccionado no cuenta con existencias disponibles para préstamo']
+    ErrNoDisp --> FinErr4([Fin con Rechazo])
+    
+    ValDispL -- Sí --> GenPrestamo[Instancia objeto Préstamo con fecha límite]
     GenPrestamo --> CambiaEstado[Cambia estado del libro a disponible = false]
     CambiaEstado --> Confirma[Muestra: 'Préstamo registrado exitosamente']
     Confirma --> Fin([Fin Exitoso])
@@ -417,7 +432,7 @@ flowchart TD
     IngresaID --> BuscaPrestamo[Sistema busca Préstamo Activo]
     
     BuscaPrestamo --> ValPrestamo{¿Existe préstamo activo?}
-    ValPrestamo -- No --> ErrPrestamo[Muestra: 'Préstamo no encontrado o ya finalizado']
+    ValPrestamo -- No --> ErrPrestamo[Muestra: 'No existe un préstamo activo para este libro']
     ErrPrestamo --> FinErr([Fin con Error])
     
     ValPrestamo -- Sí --> CierraPrestamo[Marca préstamo como finalizado]

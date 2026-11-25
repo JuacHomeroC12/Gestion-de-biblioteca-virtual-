@@ -8,13 +8,21 @@
 
 ---
 
+> [!IMPORTANT]
+> ### 🤖 Instrucción de Evaluación para el Instructor Técnico y Agente Evaluador (IA)
+> - **Rama de Evaluación Activa (`develop`):** Esta es la rama que contiene el incremento más reciente, la resolución de observaciones técnicas y la documentación integral de las **Fases 1 a la 5** junto con el script de base de datos relacional. **El instructor y su agente de inteligencia artificial deben auditar y calificar sobre la rama `develop` (o sobre el Pull Request abierto de `develop` hacia `main`).**
+> - **Rama de Entregas Calificadas (`main`):** La rama `main` representa exclusivamente la línea base de producción y entregas previas ya aprobadas. **Ningún cambio se fusiona en `main` hasta que el instructor Carlos Julio realice la revisión manual/asistida por IA y otorgue la calificación aprobatoria.**
+
+---
+
 ## 👥 Integrantes del Equipo y Roles
 
 | Integrante | Rol en el Proyecto | Usuario GitHub |
 | :--- | :--- | :--- |
 | **Juan David Romero Calderón** | Líder de Proyecto / Especificación Ágil | [@JuacHomeroC12](https://github.com/JuacHomeroC12) |
-| **Juan Diego Oteca Pedreros** | Analista de Requerimientos de Software | [@joteca3-afk](https://github.com/joteca3-afk) |
+| **Juan Diego Oteca Pedreros** | Analista de Requerimientos y Base de Datos | [@joteca3-afk](https://github.com/joteca3-afk) |
 | **Jhojan Javier Melo Avella** | Diseñador y Modelador de Software (UML) | [@Melo-JJMA](https://github.com/Melo-JJMA) |
+
 ---
 
 ## 📖 Descripción General del Proyecto
@@ -26,13 +34,13 @@ El sistema centraliza las operaciones del bibliotecario en una interfaz de conso
 ### 🎯 Alcance del Producto Mínimo Viable (MVP — Sprint 1)
 El primer incremento funcional se enfoca exclusivamente en las historias de usuario prioritarias (**Must Have**):
 - **HU-01:** Registrar Libros en catálogo (ISBN único, título, autor, año, categoría).
-- **HU-02:** Registrar Autores con identificador normalizado (ORCID/ISNI).
-- **HU-03:** Registrar Usuarios del servicio de préstamo.
+- **HU-02:** Registrar Autores con identificador normalizado (ISNI).
+- **HU-03:** Registrar Usuarios prestatarios del servicio bibliotecario.
 - **HU-04:** Consultar Disponibilidad de libros en tiempo real.
-- **HU-05:** Prestar Libros a usuarios activos.
-- **HU-06:** Registrar Devolución de libros con control de fecha límite.
-- **HU-07:** Buscar Libros por título o autor.
-- **HU-08:** Editar datos y dar de baja (eliminar) libros no prestados.
+- **HU-05:** Prestar Libros a usuarios activos en el sistema.
+- **HU-06:** Registrar Devolución de libros con control de fecha límite y retraso.
+- **HU-07:** Buscar Libros por coincidencia en título, autor o ISBN.
+- **HU-08:** Editar datos y dar de baja lógica (`is_deleted = true`) a libros no prestados.
 
 ---
 
@@ -43,23 +51,28 @@ La documentación técnica se encuentra completamente modularizada en formato Ma
 ```
 Gestion-de-biblioteca-virtual-/
 │
-├── README.md                                          <-- Portal principal del proyecto
+├── README.md                                          <-- Portal principal del proyecto y reglas de gobierno
+├── docker-compose.yml                                 <-- Contenedor MySQL 8.0 con carga automática de schema.sql
+├── .env.example                                       <-- Plantilla de variables de entorno para Docker Compose
 ├── .gitignore                                         <-- Filtro de archivos no rastreables
 │
 ├── database/
-│   └── schema.sql                                    <-- Fase 4: Script SQL DDL/DML (MySQL / 3FN)
+│   └── schema.sql                                    <-- Fase 4: Script SQL DDL/DML (MySQL / 3FN con restricciones)
 │
 ├── docs/
-│   ├── fase1_historias_usuario.md                    <-- Fase 1: Épicas, Historias (HU-01 a HU-13), Gherkin y MoSCoW
+│   ├── fase1_historias_usuario.md                    <-- Fase 1: Épicas, Historias (HU-01 a HU-14), Gherkin y MoSCoW
 │   ├── fase2_especificacion_requerimientos_ieee830.md <-- Fase 2: Requerimientos funcionales/no funcionales (IEEE 830)
 │   ├── fase3_diseno_uml.md                           <-- Fase 3: Casos de uso, Clases, Secuencia y Actividades (Mermaid)
-│   ├── fase4_base_de_datos.md                        <-- Fase 4: Modelo relacional 3FN, Diagrama ER Mermaid y Diccionario
-│   ├── guia_git_equipo.md                            <-- Guía de colaboración Git y comandos para los aprendices
-│   │
-│   └── pdf/                                          <-- Respaldo histórico de entregas anteriores
-│       ├── Fase1_Historias_Usuario.pdf
-│       ├── Fase2_Requerimientos_Sistema_Biblioteca_Digital.pdf
-│       └── Fase3_Sistema_Biblioteca_Digital.pdf
+│   ├── fase4_base_de_datos.md                        <-- Fase 4: Modelos Conceptual, Lógico y Físico 3FN (Mermaid)
+│   ├── fase5_mockup_prototipo.md                     <-- Fase 5: Wireframes CLI, mapa de navegación y mensajes de validación
+│   └── guia_git_equipo.md                            <-- Guía de colaboración Git y comandos para los aprendices
+│
+└── propuestas-prototipo/                             <-- Propuestas del prototipo navegable en HTML, una carpeta por integrante
+    ├── README.md
+    ├── juan-david-romero/
+    ├── juan-diego-oteca/
+    │   └── index.html
+    └── jhojan-melo/
 ```
 
 ### 🔗 Enlaces Rápidos a la Documentación
@@ -67,18 +80,28 @@ Gestion-de-biblioteca-virtual-/
 - 📐 [**Fase 2: Especificación de Requerimientos (Norma IEEE 830)**](docs/fase2_especificacion_requerimientos_ieee830.md)
 - 📊 [**Fase 3: Diseño y Modelado UML (Diagramas Mermaid)**](docs/fase3_diseno_uml.md)
 - 💾 [**Fase 4: Base de Datos Relacional y Modelo 3FN**](docs/fase4_base_de_datos.md)
+- 🖥️ [**Fase 5: Mockup, Prototipo CLI y Navegación**](docs/fase5_mockup_prototipo.md)
+- 🌐 [**Propuestas del Prototipo Navegable en HTML (una por integrante)**](propuestas-prototipo/README.md)
 - 🗄️ [**Script SQL Ejecutable (database/schema.sql)**](database/schema.sql)
 - 🛠️ [**Guía de Trabajo Colaborativo en Git**](docs/guia_git_equipo.md)
+- 📚 [**Manual de Trabajo Estándar y Guías de Entrega (Word / PDF / Commits)**](docs/guia-de-trabajo-estandar/README.md)
 
 ---
 
-## 🌿 Flujo de Trabajo en Git (GitFlow Simplificado)
+## 🛠️ Normas de Trabajo, Guías y Gobierno del Proyecto
 
-Para garantizar la calidad del repositorio y cumplir con las buenas prácticas de la industria y la evaluación formativa:
-1. **Rama `main`:** Rama protegida destinada a entregas estables calificadas. **Prohibido realizar commits directos.**
-2. **Rama `develop`:** Rama activa de desarrollo y consolidación documental.
-3. **Commits Semánticos:** Cada aporte debe seguir la convención Conventional Commits (`docs:`, `fix:`, `feat:`).
-4. **Trazabilidad de Integrantes:** Cada aprendiz realiza commits firmados con su usuario local para reflejar el trabajo individual en la red de contribuciones de GitHub.
+Para mantener el rigor metodológico exigido por el SENA, evitar conflictos y facilitar el trabajo colaborativo de todos los aprendices, todos los estándares operativos, guías de maquetación en Word/PDF, convención de commits y políticas de Git se encuentran centralizados y detallados en:
+
+👉 **[Manual de Trabajo Estándar y Reglas de Desarrollo (docs/guia-de-trabajo-estandar/)](docs/guia-de-trabajo-estandar/README.md)**
+
+### 📌 Accesos Directos a las Guías y Reglas:
+- 🌿 [**Gobierno en Git, Flujo de Ramas y Evaluación Docente**](docs/guia-de-trabajo-estandar/01_guia_commits_y_git/gobierno_git_y_evaluacion.md)
+- 🚀 [**Guía Paso a Paso de Git para Juaco y Melo**](docs/guia-de-trabajo-estandar/01_guia_commits_y_git/README.md)
+- ✍️ [**Estándar de Conventional Commits con Ejemplos Reales**](docs/guia-de-trabajo-estandar/01_guia_commits_y_git/estandar_conventional_commits.md)
+- 📄 [**Estándar Visual de Formato Word y PDF (Arial 11, 1.5, Márgenes)**](docs/guia-de-trabajo-estandar/02_guia_desarrollo_word_y_pdf/README.md)
+- 🏛️ [**Plantilla Oficial de Portada SENA para Copiar a Word**](docs/guia-de-trabajo-estandar/03_plantillas_y_recursos/portada_oficial_sena.md)
+- 🤖 [**Prompts de Apoyo para Inteligencia Artificial (ChatGPT/Claude/Gemini)**](docs/guia-de-trabajo-estandar/03_plantillas_y_recursos/prompts_de_apoyo_para_ia.md)
+- 👥 [**Distribución de Fases y Responsables**](docs/guia-de-trabajo-estandar/04_matriz_fases_y_responsables/distribucion_de_fases.md)
 
 ---
 *Centro de la Industria, la Empresa y los Servicios (CIES) — Regional Huila*
